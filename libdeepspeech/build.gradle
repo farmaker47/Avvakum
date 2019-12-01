@@ -1,0 +1,62 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 27
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 27
+        versionName androidGitVersion.name()
+        versionCode androidGitVersion.code()
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        setProperty("archivesBaseName", "${archivesBaseName}-${dsVersionString}")
+
+        ndk {
+            abiFilters = []
+            abiFilters.addAll(ABI_FILTERS.split(';').collect{it as String})
+        }
+
+        externalNativeBuild {
+            cmake {
+                cppFlags ""
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    testImplementation 'junit:junit:4.12'
+
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
+    implementation 'org.mozilla.deepspeech:libdeepspeech:0.5.1@aar'
+}
+
+task printABIs {
+    print ABI_FILTERS.split(';').join(" ")
+}
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+

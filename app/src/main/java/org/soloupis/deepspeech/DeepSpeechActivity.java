@@ -1,4 +1,4 @@
-package org.mozilla.deepspeech;
+package org.soloupis.deepspeech;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.nio.ByteOrder;
 import java.nio.ByteBuffer;
 
-import org.mozilla.deepspeech.libdeepspeech.DeepSpeechModel;
+import org.soloupis.deepspeech.libdeepspeech.DeepSpeechModel;
 
 public class DeepSpeechActivity extends AppCompatActivity {
 
@@ -29,7 +29,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
     TextView _decodedString;
     TextView _tfliteStatus;
 
-    Button _startInference;
+    private Button _startInference, startRecording;
 
     final int N_CEP = 26;
     final int N_CONTEXT = 9;
@@ -126,12 +126,12 @@ public class DeepSpeechActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_deep_speech);
 
-        this._decodedString = (TextView) findViewById(R.id.decodedString);
-        this._tfliteStatus = (TextView) findViewById(R.id.tfliteStatus);
+        this._decodedString = findViewById(R.id.decodedString);
+        this._tfliteStatus = findViewById(R.id.tfliteStatus);
 
-        this._tfliteModel   = (EditText) findViewById(R.id.tfliteModel);
-        this._alphabet      = (EditText) findViewById(R.id.alphabet);
-        this._audioFile     = (EditText) findViewById(R.id.audioFile);
+        this._tfliteModel   = findViewById(R.id.tfliteModel);
+        this._alphabet      = findViewById(R.id.alphabet);
+        this._audioFile     = findViewById(R.id.audioFile);
 
         this._tfliteModel.setText("/sdcard/deepspeech/output_graph.tflite");
         this._tfliteStatus.setText("Ready, waiting ...");
@@ -139,7 +139,15 @@ public class DeepSpeechActivity extends AppCompatActivity {
         this._alphabet.setText("/sdcard/deepspeech/alphabet.txt");
         this._audioFile.setText("/sdcard/deepspeech/audio.wav");
 
-        this._startInference = (Button) findViewById(R.id.btnStartInference);
+        this._startInference = findViewById(R.id.btnStartInference);
+
+        startRecording = findViewById(R.id.btnStartRecording);
+        startRecording.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
     }
 
     public void onClick_inference_handler(View v) {

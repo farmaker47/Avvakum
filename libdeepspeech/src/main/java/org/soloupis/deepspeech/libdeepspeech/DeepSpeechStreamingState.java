@@ -1,4 +1,6 @@
-package org.mozilla.deepspeech.libdeepspeech;
+package org.soloupis.deepspeech.libdeepspeech;
+
+import org.mozilla.deepspeech.libdeepspeech.SWIGTYPE_p_StreamingState;
 
 public final class DeepSpeechStreamingState {
     private SWIGTYPE_p_StreamingState _sp;

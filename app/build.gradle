@@ -4,8 +4,8 @@ android {
     compileSdkVersion 28
 
     defaultConfig {
-        applicationId "org.mozilla.deepspeech"
-        minSdkVersion 21
+        applicationId "org.soloupis.deepspeech"
+        minSdkVersion 23
         targetSdkVersion 28
         versionName androidGitVersion.name()
         versionCode androidGitVersion.code()

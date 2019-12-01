@@ -1,4 +1,4 @@
-package org.mozilla.deepspeech.libdeepspeech.test;
+package org.soloupis.deepspeech.libdeepspeech.test;
 
 import android.content.Context;
 import androidx.test.InstrumentationRegistry;
@@ -11,8 +11,8 @@ import org.junit.runners.MethodSorters;
 
 import static org.junit.Assert.*;
 
-import org.mozilla.deepspeech.libdeepspeech.DeepSpeechModel;
 import org.mozilla.deepspeech.libdeepspeech.Metadata;
+import org.soloupis.deepspeech.libdeepspeech.DeepSpeechModel;
 
 import java.io.RandomAccessFile;
 import java.io.FileNotFoundException;
@@ -66,7 +66,7 @@ public class BasicTest {
 
     @Test
     public void loadDeepSpeech_basic() {
-        DeepSpeechModel m = new DeepSpeechModel(modelFile, N_CEP, N_CONTEXT, alphabetFile, BEAM_WIDTH);
+        org.soloupis.deepspeech.libdeepspeech.DeepSpeechModel m = new org.soloupis.deepspeech.libdeepspeech.DeepSpeechModel(modelFile, N_CEP, N_CONTEXT, alphabetFile, BEAM_WIDTH);
         m.destroyModel();
     }
 
@@ -78,7 +78,7 @@ public class BasicTest {
         return retval;
     }
 
-    private String doSTT(DeepSpeechModel m, boolean extendedMetadata) {
+    private String doSTT(org.soloupis.deepspeech.libdeepspeech.DeepSpeechModel m, boolean extendedMetadata) {
         try {
             RandomAccessFile wave = new RandomAccessFile(wavFile, "r");
 
@@ -123,7 +123,7 @@ public class BasicTest {
 
     @Test
     public void loadDeepSpeech_stt_noLM() {
-        DeepSpeechModel m = new DeepSpeechModel(modelFile, N_CEP, N_CONTEXT, alphabetFile, BEAM_WIDTH);
+        org.soloupis.deepspeech.libdeepspeech.DeepSpeechModel m = new org.soloupis.deepspeech.libdeepspeech.DeepSpeechModel(modelFile, N_CEP, N_CONTEXT, alphabetFile, BEAM_WIDTH);
 
         String decoded = doSTT(m, false);
         assertEquals("she had your dark suit in greasy wash water all year", decoded);
@@ -132,7 +132,7 @@ public class BasicTest {
 
     @Test
     public void loadDeepSpeech_stt_withLM() {
-        DeepSpeechModel m = new DeepSpeechModel(modelFile, N_CEP, N_CONTEXT, alphabetFile, BEAM_WIDTH);
+        org.soloupis.deepspeech.libdeepspeech.DeepSpeechModel m = new org.soloupis.deepspeech.libdeepspeech.DeepSpeechModel(modelFile, N_CEP, N_CONTEXT, alphabetFile, BEAM_WIDTH);
         m.enableDecoderWihLM(alphabetFile, lmFile, trieFile, LM_ALPHA, LM_BETA);
 
         String decoded = doSTT(m, false);
@@ -142,7 +142,7 @@ public class BasicTest {
 
     @Test
     public void loadDeepSpeech_sttWithMetadata_noLM() {
-        DeepSpeechModel m = new DeepSpeechModel(modelFile, N_CEP, N_CONTEXT, alphabetFile, BEAM_WIDTH);
+        org.soloupis.deepspeech.libdeepspeech.DeepSpeechModel m = new org.soloupis.deepspeech.libdeepspeech.DeepSpeechModel(modelFile, N_CEP, N_CONTEXT, alphabetFile, BEAM_WIDTH);
 
         String decoded = doSTT(m, true);
         assertEquals("she had your dark suit in greasy wash water all year", decoded);
@@ -151,7 +151,7 @@ public class BasicTest {
 
     @Test
     public void loadDeepSpeech_sttWithMetadata_withLM() {
-        DeepSpeechModel m = new DeepSpeechModel(modelFile, N_CEP, N_CONTEXT, alphabetFile, BEAM_WIDTH);
+        org.soloupis.deepspeech.libdeepspeech.DeepSpeechModel m = new DeepSpeechModel(modelFile, N_CEP, N_CONTEXT, alphabetFile, BEAM_WIDTH);
         m.enableDecoderWihLM(alphabetFile, lmFile, trieFile, LM_ALPHA, LM_BETA);
 
         String decoded = doSTT(m, true);

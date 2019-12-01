@@ -1,4 +1,4 @@
-package org.mozilla.deepspeech;
+package org.soloupis.deepspeech;
 
 import org.junit.Test;
 

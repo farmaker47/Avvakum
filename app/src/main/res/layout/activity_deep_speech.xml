@@ -171,8 +171,16 @@
             android:id="@+id/btnStartInference"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Run inference!"
+            android:text="@string/run_inference"
             android:onClick="onClick_inference_handler" />
+
+        <Button
+            android:id="@+id/btnStartRecording"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="36dp"
+            android:text="@string/start_recording" />
+
 
     <!--
         <Space

@@ -3,11 +3,13 @@ package org.soloupis.deepspeech;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
+import android.os.Environment;
 
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -248,19 +250,35 @@ public class HotwordRecorder {
     /**
      * Write a wav file from the current sample.
      *
-     * @param output Output file
      * @throws IOException
      */
-    public void writeWav(final File output) throws IOException {
-        byte[] wav = pcmToWav();
+    public void writeWav(){
+        byte[] wav = new byte[0];
+        try {
+            wav = pcmToWav();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         FileOutputStream stream = null;
 
         try {
-            stream = new FileOutputStream(output);
-            stream.write(wav);
+            try {
+                stream = new FileOutputStream(Environment.getExternalStorageDirectory().toString() + "/deepspeech/soloupis.wav");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            try {
+                stream.write(wav);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } finally {
             if (stream != null) {
-                stream.close();
+                try {
+                    stream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

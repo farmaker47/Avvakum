@@ -30,6 +30,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
     TextView _tfliteStatus;
 
     private Button _startInference, startRecording;
+    private HotwordRecorder hotwordRecorder;
 
     final int N_CEP = 26;
     final int N_CONTEXT = 9;
@@ -140,11 +141,17 @@ public class DeepSpeechActivity extends AppCompatActivity {
         this._audioFile.setText("/sdcard/deepspeech/audio.wav");
 
         this._startInference = findViewById(R.id.btnStartInference);
+        hotwordRecorder = new HotwordRecorder("hotKey",5);
 
         startRecording = findViewById(R.id.btnStartRecording);
         startRecording.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                hotwordRecorder.startRecording();
+                hotwordRecorder.stopRecording();
+                if(hotwordRecorder.validateSample()){
+                    hotwordRecorder.writeWav();
+                }
 
             }
         });

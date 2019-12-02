@@ -23,17 +23,14 @@ public class DeepSpeechActivity extends AppCompatActivity {
     DeepSpeechModel _m = null;
 
     EditText _tfliteModel;
-    EditText _alphabet;
     EditText _audioFile;
 
     TextView _decodedString;
     TextView _tfliteStatus;
 
-    private Button _startInference, startRecording;
+    private Button _startInference, startRecording, stopRecording;
     private HotwordRecorder hotwordRecorder;
 
-    final int N_CEP = 26;
-    final int N_CONTEXT = 9;
     final int BEAM_WIDTH = 50;
     final float LM_ALPHA = 0.75f;
     final float LM_BETA = 1.85f;
@@ -52,10 +49,10 @@ public class DeepSpeechActivity extends AppCompatActivity {
         return (int)((b1 & 0xFF) | (b2 & 0xFF) << 8 | (b3 & 0xFF) << 16 | (b4 & 0xFF) << 24);
     }
 
-    private void newModel(String tfliteModel, String alphabet) {
+    private void newModel(String tfliteModel) {
         this._tfliteStatus.setText("Creating model");
         if (this._m == null) {
-            this._m = new DeepSpeechModel(tfliteModel, N_CEP, N_CONTEXT, alphabet, BEAM_WIDTH);
+            this._m = new DeepSpeechModel(tfliteModel, BEAM_WIDTH);
         }
     }
 
@@ -64,7 +61,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
 
         this._startInference.setEnabled(false);
 
-        this.newModel(this._tfliteModel.getText().toString(), this._alphabet.getText().toString());
+        this.newModel(this._tfliteModel.getText().toString());
 
         this._tfliteStatus.setText("Extracting audio features ...");
 
@@ -80,7 +77,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
             // tv_numChannels.setText("numChannels=" + (numChannels == 1 ? "MONO" : "!MONO"));
 
             wave.seek(24); int sampleRate = this.readLEInt(wave);
-            assert (sampleRate == 16000); // 16000 Hz
+            assert (sampleRate == this._m.sampleRate()); // desired sample rate
             // tv_sampleRate.setText("sampleRate=" + (sampleRate == 16000 ? "16kHz" : "!16kHz"));
 
             wave.seek(34); char bitsPerSample = this.readLEChar(wave);
@@ -103,7 +100,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
 
             long inferenceStartTime = System.currentTimeMillis();
 
-            String decoded = this._m.stt(shorts, shorts.length, sampleRate);
+            String decoded = this._m.stt(shorts, shorts.length);
 
             inferenceExecTime = System.currentTimeMillis() - inferenceStartTime;
 
@@ -127,20 +124,19 @@ public class DeepSpeechActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_deep_speech);
 
-        this._decodedString = findViewById(R.id.decodedString);
-        this._tfliteStatus = findViewById(R.id.tfliteStatus);
+        this._decodedString = (TextView) findViewById(R.id.decodedString);
+        this._tfliteStatus = (TextView) findViewById(R.id.tfliteStatus);
 
-        this._tfliteModel   = findViewById(R.id.tfliteModel);
-        this._alphabet      = findViewById(R.id.alphabet);
-        this._audioFile     = findViewById(R.id.audioFile);
+        this._tfliteModel   = (EditText) findViewById(R.id.tfliteModel);
+        this._audioFile     = (EditText) findViewById(R.id.audioFile);
 
-        this._tfliteModel.setText("/sdcard/deepspeech/output_graph.tflite");
+        this._tfliteModel.setText("/sdcard/deepspeech2/output_graph.tflite");
         this._tfliteStatus.setText("Ready, waiting ...");
 
-        this._alphabet.setText("/sdcard/deepspeech/alphabet.txt");
-        this._audioFile.setText("/sdcard/deepspeech/audio.wav");
+        this._audioFile.setText("/sdcard/deepspeech2/soloupis.wav");
 
-        this._startInference = findViewById(R.id.btnStartInference);
+        this._startInference = (Button) findViewById(R.id.btnStartInference);
+
         hotwordRecorder = new HotwordRecorder("hotKey",5);
 
         startRecording = findViewById(R.id.btnStartRecording);
@@ -148,11 +144,16 @@ public class DeepSpeechActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 hotwordRecorder.startRecording();
-                hotwordRecorder.stopRecording();
-                if(hotwordRecorder.validateSample()){
-                    hotwordRecorder.writeWav();
-                }
+            }
+        });
+        stopRecording = findViewById(R.id.btnStopRecording);
 
+        stopRecording.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                hotwordRecorder.stopRecording();
+                hotwordRecorder.writeWav();
+                /*if(hotwordRecorder.validateSample()){}*/
             }
         });
     }
@@ -182,7 +183,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
         super.onDestroy();
 
         if (this._m != null) {
-            this._m.destroyModel();
+            this._m.freeModel();
         }
     }
 }

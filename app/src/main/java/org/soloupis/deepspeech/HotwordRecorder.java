@@ -4,6 +4,7 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Environment;
+import android.util.Log;
 
 import org.json.JSONObject;
 
@@ -162,7 +163,7 @@ public class HotwordRecorder {
 
         double seconds = mPcmStream.size() / SAMPLE_RATE;
 
-        if (seconds > 1.6) {
+        if (seconds > 5) {
             return false;
         }
 
@@ -256,6 +257,7 @@ public class HotwordRecorder {
         byte[] wav = new byte[0];
         try {
             wav = pcmToWav();
+            Log.i("WAV_size",String.valueOf(wav.length));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -263,7 +265,8 @@ public class HotwordRecorder {
 
         try {
             try {
-                stream = new FileOutputStream(Environment.getExternalStorageDirectory().toString() + "/deepspeech/soloupis.wav");
+                stream = new FileOutputStream(Environment.getExternalStorageDirectory().toString() +
+                        "/deepspeech2/soloupis.wav",false);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }

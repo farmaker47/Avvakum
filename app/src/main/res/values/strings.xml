@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DeepSpeech</string>
+    <string name="app_name">Avvakum</string>
     <string name="start_recording">Start Recording!</string>
     <string name="run_inference">Run inference!</string>
     <string name="stop_recording">STOP RECORDING</string>

@@ -68,7 +68,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
 
         /*this._startInference.setEnabled(false);*/
 
-        this.newModel(this._tfliteModel.getText().toString());
+        this.newModel("/sdcard/deepspeech2/output_graph.tflite");
 
         this._tfliteStatus.setText("Extracting audio features ...");
 
@@ -116,7 +116,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
 
             inferenceExecTime = System.currentTimeMillis() - inferenceStartTime;
 
-            this._decodedString.setText(decoded);
+            this._decodedString.setText("\"..." + decoded + "...\"");
 
         } catch (FileNotFoundException ex) {
 
@@ -142,10 +142,10 @@ public class DeepSpeechActivity extends AppCompatActivity {
         this._tfliteModel = findViewById(R.id.tfliteModel);
         this._audioFile = findViewById(R.id.audioFile);
 
-        this._tfliteModel.setText("/sdcard/deepspeech2/output_graph.tflite");
-        this._tfliteStatus.setText("Ready, waiting ...");
+        /*this._tfliteModel.setText("/sdcard/deepspeech2/output_graph.tflite");*/
+        this._tfliteStatus.setText("Ready! Press mic button...");
 
-        this._audioFile.setText("/sdcard/deepspeech2/soloupis.wav");
+        /*this._audioFile.setText("/sdcard/deepspeech2/soloupis.wav");*/
 
         /*this._startInference = findViewById(R.id.btnStartInference);*/
 
@@ -176,12 +176,14 @@ public class DeepSpeechActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if(!rippleBackground.isRippleAnimationRunning()){
                     rippleBackground.startRippleAnimation();
-                    centerImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause_white_36dp));
+                    centerImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause_white_56dp));
+                    _tfliteStatus.setText("Speak to the microphone...");
                     hotwordRecorder.startRecording();
                 }else{
                     rippleBackground.stopRippleAnimation();
-                    centerImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none_white_36dp));
+                    centerImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none_white_56dp));
                     hotwordRecorder.stopRecording();
+                    _tfliteStatus.setText("Wait for the transcription...");
                     hotwordRecorder.writeWav();
 
                     Handler handler = new Handler();
@@ -189,7 +191,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
                         public void run() {
                             // Actions to do after 500 milliseconds
                             playAudioFile();
-                            doInference(_audioFile.getText().toString());
+                            doInference("/sdcard/deepspeech2/soloupis.wav");
 
                         }
                     }, 500);
@@ -207,7 +209,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
     public void playAudioFile() {
         try {
             MediaPlayer mediaPlayer = new MediaPlayer();
-            mediaPlayer.setDataSource(this._audioFile.getText().toString());
+            mediaPlayer.setDataSource("/sdcard/deepspeech2/soloupis.wav");
             mediaPlayer.prepare();
             mediaPlayer.start();
         } catch (IOException ex) {

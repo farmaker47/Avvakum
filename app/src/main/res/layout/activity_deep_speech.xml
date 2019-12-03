@@ -69,7 +69,7 @@
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintGuide_end="491dp"
+        app:layout_constraintGuide_end="455dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -79,8 +79,8 @@
         android:orientation="vertical">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:orientation="horizontal">
 
             <TextView
@@ -98,8 +98,8 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:orientation="horizontal">
 
             <TextView
@@ -117,8 +117,8 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:orientation="horizontal">
 
             <TextView
@@ -141,9 +141,12 @@
 
         <TextView
             android:id="@+id/tfliteStatus"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hello World!"
+            tools:text="Hello World!"
+            android:layout_marginTop="48dp"
+            android:textSize="24sp"
+            android:layout_gravity="center_horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -155,13 +158,12 @@
 
         <TextView
             android:id="@+id/decodedString"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hello World!"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="36dp"
+            android:textSize="36sp"
+            android:textStyle="italic|bold" />
 
         <Space
             android:layout_width="match_parent"
@@ -200,26 +202,12 @@
 
             <ImageButton
                 android:id="@+id/centerImage"
-                android:layout_width="96dp"
-                android:layout_height="96dp"
+                android:layout_width="124dp"
+                android:layout_height="124dp"
                 android:layout_centerInParent="true"
                 android:background="@drawable/ic_mic_background"
-                android:src="@drawable/ic_mic_none_white_36dp" />
+                android:src="@drawable/ic_mic_none_white_56dp" />
         </com.skyfishjy.library.RippleBackground>
-
-
-        <!--
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="@android:dimen/app_icon_size" />
-
-            <Button
-                android:id="@+id/btnPlayAudioFile"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Listen to audio"
-                android:onClick="onClick_audio_handler" />
-        -->
 
     </LinearLayout>
 

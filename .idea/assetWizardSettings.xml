@@ -29,11 +29,11 @@
                         <option name="values">
                           <map>
                             <entry key="color" value="ffffff" />
-                            <entry key="height" value="36" />
-                            <entry key="outputName" value="ic_pause_white_36dp" />
+                            <entry key="height" value="56" />
+                            <entry key="outputName" value="ic_pause_white_56dp" />
                             <entry key="overrideSize" value="true" />
                             <entry key="sourceFile" value="C:\Users\farmaker" />
-                            <entry key="width" value="36" />
+                            <entry key="width" value="56" />
                           </map>
                         </option>
                       </PersistentState>

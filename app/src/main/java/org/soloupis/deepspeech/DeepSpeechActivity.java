@@ -1,14 +1,19 @@
 package org.soloupis.deepspeech;
 
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
 
+import android.os.Handler;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.EditText;
 import android.widget.Button;
 
 import android.media.MediaPlayer;
+
+import com.skyfishjy.library.RippleBackground;
 
 import java.io.RandomAccessFile;
 import java.io.FileNotFoundException;
@@ -30,6 +35,8 @@ public class DeepSpeechActivity extends AppCompatActivity {
 
     private Button _startInference, startRecording, stopRecording;
     private HotwordRecorder hotwordRecorder;
+    private RippleBackground rippleBackground;
+    private ImageButton centerImage;
 
     final int BEAM_WIDTH = 50;
     final float LM_ALPHA = 0.75f;
@@ -38,7 +45,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
     private char readLEChar(RandomAccessFile f) throws IOException {
         byte b1 = f.readByte();
         byte b2 = f.readByte();
-        return (char)((b2 << 8) | b1);
+        return (char) ((b2 << 8) | b1);
     }
 
     private int readLEInt(RandomAccessFile f) throws IOException {
@@ -46,7 +53,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
         byte b2 = f.readByte();
         byte b3 = f.readByte();
         byte b4 = f.readByte();
-        return (int)((b1 & 0xFF) | (b2 & 0xFF) << 8 | (b3 & 0xFF) << 16 | (b4 & 0xFF) << 24);
+        return (int) ((b1 & 0xFF) | (b2 & 0xFF) << 8 | (b3 & 0xFF) << 16 | (b4 & 0xFF) << 24);
     }
 
     private void newModel(String tfliteModel) {
@@ -59,7 +66,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
     private void doInference(String audioFile) {
         long inferenceExecTime = 0;
 
-        this._startInference.setEnabled(false);
+        /*this._startInference.setEnabled(false);*/
 
         this.newModel(this._tfliteModel.getText().toString());
 
@@ -68,23 +75,28 @@ public class DeepSpeechActivity extends AppCompatActivity {
         try {
             RandomAccessFile wave = new RandomAccessFile(audioFile, "r");
 
-            wave.seek(20); char audioFormat = this.readLEChar(wave);
+            wave.seek(20);
+            char audioFormat = this.readLEChar(wave);
             assert (audioFormat == 1); // 1 is PCM
             // tv_audioFormat.setText("audioFormat=" + (audioFormat == 1 ? "PCM" : "!PCM"));
 
-            wave.seek(22); char numChannels = this.readLEChar(wave);
+            wave.seek(22);
+            char numChannels = this.readLEChar(wave);
             assert (numChannels == 1); // MONO
             // tv_numChannels.setText("numChannels=" + (numChannels == 1 ? "MONO" : "!MONO"));
 
-            wave.seek(24); int sampleRate = this.readLEInt(wave);
+            wave.seek(24);
+            int sampleRate = this.readLEInt(wave);
             assert (sampleRate == this._m.sampleRate()); // desired sample rate
             // tv_sampleRate.setText("sampleRate=" + (sampleRate == 16000 ? "16kHz" : "!16kHz"));
 
-            wave.seek(34); char bitsPerSample = this.readLEChar(wave);
+            wave.seek(34);
+            char bitsPerSample = this.readLEChar(wave);
             assert (bitsPerSample == 16); // 16 bits per sample
             // tv_bitsPerSample.setText("bitsPerSample=" + (bitsPerSample == 16 ? "16-bits" : "!16-bits" ));
 
-            wave.seek(40); int bufferSize = this.readLEInt(wave);
+            wave.seek(40);
+            int bufferSize = this.readLEInt(wave);
             assert (bufferSize > 0);
             // tv_bufferSize.setText("bufferSize=" + bufferSize);
 
@@ -92,7 +104,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
             byte[] bytes = new byte[bufferSize];
             wave.readFully(bytes);
 
-            short[] shorts = new short[bytes.length/2];
+            short[] shorts = new short[bytes.length / 2];
             // to turn bytes to shorts as either big endian or little endian.
             ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(shorts);
 
@@ -116,7 +128,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
 
         this._tfliteStatus.setText("Finished! Took " + inferenceExecTime + "ms");
 
-        this._startInference.setEnabled(true);
+        /*this._startInference.setEnabled(true);*/
     }
 
     @Override
@@ -124,22 +136,22 @@ public class DeepSpeechActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_deep_speech);
 
-        this._decodedString = (TextView) findViewById(R.id.decodedString);
-        this._tfliteStatus = (TextView) findViewById(R.id.tfliteStatus);
+        this._decodedString = findViewById(R.id.decodedString);
+        this._tfliteStatus = findViewById(R.id.tfliteStatus);
 
-        this._tfliteModel   = (EditText) findViewById(R.id.tfliteModel);
-        this._audioFile     = (EditText) findViewById(R.id.audioFile);
+        this._tfliteModel = findViewById(R.id.tfliteModel);
+        this._audioFile = findViewById(R.id.audioFile);
 
         this._tfliteModel.setText("/sdcard/deepspeech2/output_graph.tflite");
         this._tfliteStatus.setText("Ready, waiting ...");
 
         this._audioFile.setText("/sdcard/deepspeech2/soloupis.wav");
 
-        this._startInference = (Button) findViewById(R.id.btnStartInference);
+        /*this._startInference = findViewById(R.id.btnStartInference);*/
 
-        hotwordRecorder = new HotwordRecorder("hotKey",5);
+        hotwordRecorder = new HotwordRecorder("hotKey", 5);
 
-        startRecording = findViewById(R.id.btnStartRecording);
+        /*startRecording = findViewById(R.id.btnStartRecording);
         startRecording.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -153,19 +165,48 @@ public class DeepSpeechActivity extends AppCompatActivity {
             public void onClick(View view) {
                 hotwordRecorder.stopRecording();
                 hotwordRecorder.writeWav();
-                /*if(hotwordRecorder.validateSample()){}*/
+                *//*if(hotwordRecorder.validateSample()){}*//*
+            }
+        });*/
+
+        rippleBackground=findViewById(R.id.content);
+        centerImage = findViewById(R.id.centerImage);
+        centerImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!rippleBackground.isRippleAnimationRunning()){
+                    rippleBackground.startRippleAnimation();
+                    centerImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause_white_36dp));
+                    hotwordRecorder.startRecording();
+                }else{
+                    rippleBackground.stopRippleAnimation();
+                    centerImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none_white_36dp));
+                    hotwordRecorder.stopRecording();
+                    hotwordRecorder.writeWav();
+
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        public void run() {
+                            // Actions to do after 500 milliseconds
+                            playAudioFile();
+                            doInference(_audioFile.getText().toString());
+
+                        }
+                    }, 500);
+                }
             }
         });
+
     }
 
-    public void onClick_inference_handler(View v) {
+    /*public void onClick_inference_handler(View v) {
         this.playAudioFile();
         this.doInference(this._audioFile.getText().toString());
-    }
+    }*/
 
     public void playAudioFile() {
         try {
-            MediaPlayer mediaPlayer = new  MediaPlayer();
+            MediaPlayer mediaPlayer = new MediaPlayer();
             mediaPlayer.setDataSource(this._audioFile.getText().toString());
             mediaPlayer.prepare();
             mediaPlayer.start();

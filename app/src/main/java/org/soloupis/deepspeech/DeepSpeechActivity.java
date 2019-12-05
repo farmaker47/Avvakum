@@ -38,7 +38,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
     private RippleBackground rippleBackground;
     private ImageButton centerImage;
 
-    final int BEAM_WIDTH = 50;
+    final int BEAM_WIDTH = 70;
     final float LM_ALPHA = 0.75f;
     final float LM_BETA = 1.85f;
 
@@ -68,7 +68,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
 
         /*this._startInference.setEnabled(false);*/
 
-        this.newModel("/sdcard/deepspeech2/output_graph.tflite");
+        this.newModel("/sdcard/deepspeech3/output_graph.tflite");
 
         this._tfliteStatus.setText("Extracting audio features ...");
 
@@ -191,7 +191,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
                         public void run() {
                             // Actions to do after 500 milliseconds
                             playAudioFile();
-                            doInference("/sdcard/deepspeech2/soloupis.wav");
+                            doInference("/sdcard/deepspeech3/soloupis.wav");
 
                         }
                     }, 500);
@@ -209,7 +209,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
     public void playAudioFile() {
         try {
             MediaPlayer mediaPlayer = new MediaPlayer();
-            mediaPlayer.setDataSource("/sdcard/deepspeech2/soloupis.wav");
+            mediaPlayer.setDataSource("/sdcard/deepspeech3/soloupis.wav");
             mediaPlayer.prepare();
             mediaPlayer.start();
         } catch (IOException ex) {

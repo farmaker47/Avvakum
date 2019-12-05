@@ -266,7 +266,7 @@ public class HotwordRecorder {
         try {
             try {
                 stream = new FileOutputStream(Environment.getExternalStorageDirectory().toString() +
-                        "/deepspeech2/soloupis.wav",false);
+                        "/deepspeech3/soloupis.wav",false);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }

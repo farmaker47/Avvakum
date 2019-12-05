@@ -38,7 +38,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
     private RippleBackground rippleBackground;
     private ImageButton centerImage;
 
-    final int BEAM_WIDTH = 70;
+    final int BEAM_WIDTH = 50;
     final float LM_ALPHA = 0.75f;
     final float LM_BETA = 1.85f;
 

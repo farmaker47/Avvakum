@@ -38,7 +38,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
     private RippleBackground rippleBackground;
     private ImageButton centerImage;
 
-    final int BEAM_WIDTH = 50;
+    final int BEAM_WIDTH = 40;
     final float LM_ALPHA = 0.75f;
     final float LM_BETA = 1.85f;
 
@@ -178,6 +178,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
                     rippleBackground.startRippleAnimation();
                     centerImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause_white_56dp));
                     _tfliteStatus.setText("Speak to the microphone...");
+                    _decodedString.setText("");
                     hotwordRecorder.startRecording();
                 }else{
                     rippleBackground.stopRippleAnimation();

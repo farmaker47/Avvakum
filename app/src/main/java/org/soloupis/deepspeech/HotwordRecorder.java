@@ -63,10 +63,10 @@ public class HotwordRecorder {
      * Start the recording process.
      */
     public void startRecording() {
-        if (mRecorder != null) {
+        /*if (mRecorder != null && mRecorder.getState() == AudioRecord.STATE_INITIALIZED) {
             mRecorder.stop();
             mRecorder.release();
-        }
+        }*/
 
         mPcmStream.reset();
         mRecorder = new AudioRecord.Builder().setAudioSource(AUDIO_SOURCE)

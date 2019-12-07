@@ -162,7 +162,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_margin="36dp"
-            android:textSize="36sp"
+            android:textSize="24sp"
             android:textStyle="italic|bold" />
 
         <Space

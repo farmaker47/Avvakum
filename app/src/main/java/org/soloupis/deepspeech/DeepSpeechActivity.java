@@ -41,105 +41,11 @@ public class DeepSpeechActivity extends AppCompatActivity {
     private ImageButton centerImage;
 
     private Timer t;
+    private String wholeSentence;
 
-    final int BEAM_WIDTH = 40;
+    final int BEAM_WIDTH = 20;
     final float LM_ALPHA = 0.75f;
     final float LM_BETA = 1.85f;
-
-    private char readLEChar(RandomAccessFile f) throws IOException {
-        byte b1 = f.readByte();
-        byte b2 = f.readByte();
-        return (char) ((b2 << 8) | b1);
-    }
-
-    private int readLEInt(RandomAccessFile f) throws IOException {
-        byte b1 = f.readByte();
-        byte b2 = f.readByte();
-        byte b3 = f.readByte();
-        byte b4 = f.readByte();
-        return (int) ((b1 & 0xFF) | (b2 & 0xFF) << 8 | (b3 & 0xFF) << 16 | (b4 & 0xFF) << 24);
-    }
-
-    private void newModel(String tfliteModel) {
-        //this._tfliteStatus.setText("Creating model");
-        if (this._m == null) {
-            this._m = new DeepSpeechModel(tfliteModel, BEAM_WIDTH);
-        }
-    }
-
-    private void doInference(final String audioFile) {
-        final long[] inferenceExecTime = {0};
-
-        /*this._startInference.setEnabled(false);*/
-
-        this.newModel("/sdcard/deepspeech3/output_graph.tflite");
-
-        //this._tfliteStatus.setText("Extracting audio features ...");
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    RandomAccessFile wave = new RandomAccessFile(audioFile, "r");
-
-                    wave.seek(20);
-                    char audioFormat = readLEChar(wave);
-                    assert (audioFormat == 1); // 1 is PCM
-                    // tv_audioFormat.setText("audioFormat=" + (audioFormat == 1 ? "PCM" : "!PCM"));
-
-                    wave.seek(22);
-                    char numChannels = readLEChar(wave);
-                    assert (numChannels == 1); // MONO
-                    // tv_numChannels.setText("numChannels=" + (numChannels == 1 ? "MONO" : "!MONO"));
-
-                    wave.seek(24);
-                    int sampleRate = readLEInt(wave);
-                    assert (sampleRate == _m.sampleRate()); // desired sample rate
-                    // tv_sampleRate.setText("sampleRate=" + (sampleRate == 16000 ? "16kHz" : "!16kHz"));
-
-                    wave.seek(34);
-                    char bitsPerSample = readLEChar(wave);
-                    assert (bitsPerSample == 16); // 16 bits per sample
-                    // tv_bitsPerSample.setText("bitsPerSample=" + (bitsPerSample == 16 ? "16-bits" : "!16-bits" ));
-
-                    wave.seek(40);
-                    int bufferSize = readLEInt(wave);
-                    assert (bufferSize > 0);
-                    // tv_bufferSize.setText("bufferSize=" + bufferSize);
-
-                    wave.seek(44);
-                    byte[] bytes = new byte[bufferSize];
-                    wave.readFully(bytes);
-
-                    short[] shorts = new short[bytes.length / 2];
-                    // to turn bytes to shorts as either big endian or little endian.
-                    ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(shorts);
-
-                    //this._tfliteStatus.setText("Running inference ...");
-
-                    long inferenceStartTime = System.currentTimeMillis();
-
-                    String decoded = _m.stt(shorts, shorts.length);
-
-                    inferenceExecTime[0] = System.currentTimeMillis() - inferenceStartTime;
-
-                    _decodedString.setText("\"..." + decoded + "...\"");
-
-                } catch (FileNotFoundException ex) {
-
-                } catch (IOException ex) {
-
-                } finally {
-
-                }
-
-                _tfliteStatus.setText("Finished! Took " + inferenceExecTime[0] + "ms");
-            }
-        });
-
-
-
-        /*this._startInference.setEnabled(true);*/
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -182,9 +88,6 @@ public class DeepSpeechActivity extends AppCompatActivity {
         rippleBackground = findViewById(R.id.content);
         centerImage = findViewById(R.id.centerImage);
 
-        //Declare the timer
-        t = new Timer();
-
         centerImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -193,8 +96,11 @@ public class DeepSpeechActivity extends AppCompatActivity {
                     centerImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause_white_56dp));
                     _tfliteStatus.setText("Speak to the microphone...");
                     _decodedString.setText("");
+                    wholeSentence = "";
                     hotwordRecorder.startRecording();
 
+                    //Declare the timer
+                    t = new Timer();
                     //Set the schedule function and rate
                     t.scheduleAtFixedRate(new TimerTask() {
                                               @Override
@@ -202,22 +108,22 @@ public class DeepSpeechActivity extends AppCompatActivity {
                                                   //Called each time of some milliseconds(the period parameter)
                                                   hotwordRecorder.stopRecording();
                                                   hotwordRecorder.writeWav();
+                                                  hotwordRecorder.startRecording();
                                                   doInference("/sdcard/deepspeech3/soloupis.wav");
-                                                  //hotwordRecorder.startRecording();
                                               }
                                           },
                             //Set how long before to start calling the TimerTask (in milliseconds)
-                            0,
+                            5000,
                             //Set the amount of time between each execution (in milliseconds)
-                            2000);
+                            5000);
 
                 } else {
                     rippleBackground.stopRippleAnimation();
                     centerImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none_white_56dp));
                     hotwordRecorder.stopRecording();
                     //_tfliteStatus.setText("Wait for the transcription...");
-                    hotwordRecorder.writeWav();
-                    doInference("/sdcard/deepspeech3/soloupis.wav");
+                    //hotwordRecorder.writeWav();
+                    //doInference("/sdcard/deepspeech3/soloupis.wav");
 
                     Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
@@ -235,6 +141,99 @@ public class DeepSpeechActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private char readLEChar(RandomAccessFile f) throws IOException {
+        byte b1 = f.readByte();
+        byte b2 = f.readByte();
+        return (char) ((b2 << 8) | b1);
+    }
+
+    private int readLEInt(RandomAccessFile f) throws IOException {
+        byte b1 = f.readByte();
+        byte b2 = f.readByte();
+        byte b3 = f.readByte();
+        byte b4 = f.readByte();
+        return (int) ((b1 & 0xFF) | (b2 & 0xFF) << 8 | (b3 & 0xFF) << 16 | (b4 & 0xFF) << 24);
+    }
+
+    private void newModel(String tfliteModel) {
+        //this._tfliteStatus.setText("Creating model");
+        if (this._m == null) {
+            this._m = new DeepSpeechModel(tfliteModel, BEAM_WIDTH);
+        }
+    }
+
+    private void doInference(final String audioFile) {
+        final long[] inferenceExecTime = {0};
+
+        /*this._startInference.setEnabled(false);*/
+
+        this.newModel("/sdcard/deepspeech3/output_graph.tflite");
+
+        //this._tfliteStatus.setText("Extracting audio features ...");
+        try {
+            RandomAccessFile wave = new RandomAccessFile(audioFile, "r");
+
+            wave.seek(20);
+            char audioFormat = readLEChar(wave);
+            assert (audioFormat == 1); // 1 is PCM
+            // tv_audioFormat.setText("audioFormat=" + (audioFormat == 1 ? "PCM" : "!PCM"));
+
+            wave.seek(22);
+            char numChannels = readLEChar(wave);
+            assert (numChannels == 1); // MONO
+            // tv_numChannels.setText("numChannels=" + (numChannels == 1 ? "MONO" : "!MONO"));
+
+            wave.seek(24);
+            int sampleRate = readLEInt(wave);
+            assert (sampleRate == _m.sampleRate()); // desired sample rate
+            // tv_sampleRate.setText("sampleRate=" + (sampleRate == 16000 ? "16kHz" : "!16kHz"));
+
+            wave.seek(34);
+            char bitsPerSample = readLEChar(wave);
+            assert (bitsPerSample == 16); // 16 bits per sample
+            // tv_bitsPerSample.setText("bitsPerSample=" + (bitsPerSample == 16 ? "16-bits" : "!16-bits" ));
+
+            wave.seek(40);
+            int bufferSize = readLEInt(wave);
+            assert (bufferSize > 0);
+            // tv_bufferSize.setText("bufferSize=" + bufferSize);
+
+            wave.seek(44);
+            byte[] bytes = new byte[bufferSize];
+            wave.readFully(bytes);
+
+            short[] shorts = new short[bytes.length / 2];
+            // to turn bytes to shorts as either big endian or little endian.
+            ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(shorts);
+
+            //this._tfliteStatus.setText("Running inference ...");
+
+            long inferenceStartTime = System.currentTimeMillis();
+
+            wholeSentence += _m.stt(shorts, shorts.length) + ".";
+
+            inferenceExecTime[0] = System.currentTimeMillis() - inferenceStartTime;
+
+        } catch (FileNotFoundException ex) {
+
+        } catch (IOException ex) {
+
+        } finally {
+
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                _decodedString.setText("\"..." + wholeSentence + " ...\"");
+                _tfliteStatus.setText("Finished! Took " + inferenceExecTime[0] + "ms");
+            }
+        });
+
+
+
+        /*this._startInference.setEnabled(true);*/
     }
 
     /*public void onClick_inference_handler(View v) {

@@ -58,32 +58,8 @@ public class DeepSpeechActivity extends AppCompatActivity {
         this._tfliteModel = findViewById(R.id.tfliteModel);
         this._audioFile = findViewById(R.id.audioFile);
 
-        /*this._tfliteModel.setText("/sdcard/deepspeech2/output_graph.tflite");*/
         this._tfliteStatus.setText("Ready! Press mic button...");
-
-        /*this._audioFile.setText("/sdcard/deepspeech2/soloupis.wav");*/
-
-        /*this._startInference = findViewById(R.id.btnStartInference);*/
-
         hotwordRecorder = new HotwordRecorder("hotKey", 5);
-
-        /*startRecording = findViewById(R.id.btnStartRecording);
-        startRecording.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                hotwordRecorder.startRecording();
-            }
-        });
-        stopRecording = findViewById(R.id.btnStopRecording);
-
-        stopRecording.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                hotwordRecorder.stopRecording();
-                hotwordRecorder.writeWav();
-                *//*if(hotwordRecorder.validateSample()){}*//*
-            }
-        });*/
 
         rippleBackground = findViewById(R.id.content);
         centerImage = findViewById(R.id.centerImage);
@@ -121,20 +97,6 @@ public class DeepSpeechActivity extends AppCompatActivity {
                     rippleBackground.stopRippleAnimation();
                     centerImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none_white_56dp));
                     hotwordRecorder.stopRecording();
-                    //_tfliteStatus.setText("Wait for the transcription...");
-                    //hotwordRecorder.writeWav();
-                    //doInference("/sdcard/deepspeech3/soloupis.wav");
-
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        public void run() {
-                            // Actions to do after 500 milliseconds
-                            //playAudioFile();
-                            //doInference("/sdcard/deepspeech3/soloupis.wav");
-
-                        }
-                    }, 100);
-
                     //Finally stop timer
                     t.cancel();
                 }
@@ -158,7 +120,6 @@ public class DeepSpeechActivity extends AppCompatActivity {
     }
 
     private void newModel(String tfliteModel) {
-        //this._tfliteStatus.setText("Creating model");
         if (this._m == null) {
             this._m = new DeepSpeechModel(tfliteModel, BEAM_WIDTH);
         }
@@ -167,11 +128,8 @@ public class DeepSpeechActivity extends AppCompatActivity {
     private void doInference(final String audioFile) {
         final long[] inferenceExecTime = {0};
 
-        /*this._startInference.setEnabled(false);*/
-
         this.newModel("/sdcard/deepspeech3/output_graph.tflite");
 
-        //this._tfliteStatus.setText("Extracting audio features ...");
         try {
             RandomAccessFile wave = new RandomAccessFile(audioFile, "r");
 
@@ -208,8 +166,6 @@ public class DeepSpeechActivity extends AppCompatActivity {
             // to turn bytes to shorts as either big endian or little endian.
             ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(shorts);
 
-            //this._tfliteStatus.setText("Running inference ...");
-
             long inferenceStartTime = System.currentTimeMillis();
 
             wholeSentence += _m.stt(shorts, shorts.length) + ".";
@@ -230,16 +186,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
                 _tfliteStatus.setText("Finished! Took " + inferenceExecTime[0] + "ms");
             }
         });
-
-
-
-        /*this._startInference.setEnabled(true);*/
     }
-
-    /*public void onClick_inference_handler(View v) {
-        this.playAudioFile();
-        this.doInference(this._audioFile.getText().toString());
-    }*/
 
     public void playAudioFile() {
         try {

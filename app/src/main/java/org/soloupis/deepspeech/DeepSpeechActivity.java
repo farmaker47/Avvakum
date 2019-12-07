@@ -20,6 +20,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.nio.ByteBuffer;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.soloupis.deepspeech.libdeepspeech.DeepSpeechModel;
 
@@ -37,6 +39,8 @@ public class DeepSpeechActivity extends AppCompatActivity {
     private HotwordRecorder hotwordRecorder;
     private RippleBackground rippleBackground;
     private ImageButton centerImage;
+
+    private Timer t;
 
     final int BEAM_WIDTH = 40;
     final float LM_ALPHA = 0.75f;
@@ -57,76 +61,82 @@ public class DeepSpeechActivity extends AppCompatActivity {
     }
 
     private void newModel(String tfliteModel) {
-        this._tfliteStatus.setText("Creating model");
+        //this._tfliteStatus.setText("Creating model");
         if (this._m == null) {
             this._m = new DeepSpeechModel(tfliteModel, BEAM_WIDTH);
         }
     }
 
-    private void doInference(String audioFile) {
-        long inferenceExecTime = 0;
+    private void doInference(final String audioFile) {
+        final long[] inferenceExecTime = {0};
 
         /*this._startInference.setEnabled(false);*/
 
         this.newModel("/sdcard/deepspeech3/output_graph.tflite");
 
-        this._tfliteStatus.setText("Extracting audio features ...");
+        //this._tfliteStatus.setText("Extracting audio features ...");
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    RandomAccessFile wave = new RandomAccessFile(audioFile, "r");
 
-        try {
-            RandomAccessFile wave = new RandomAccessFile(audioFile, "r");
+                    wave.seek(20);
+                    char audioFormat = readLEChar(wave);
+                    assert (audioFormat == 1); // 1 is PCM
+                    // tv_audioFormat.setText("audioFormat=" + (audioFormat == 1 ? "PCM" : "!PCM"));
 
-            wave.seek(20);
-            char audioFormat = this.readLEChar(wave);
-            assert (audioFormat == 1); // 1 is PCM
-            // tv_audioFormat.setText("audioFormat=" + (audioFormat == 1 ? "PCM" : "!PCM"));
+                    wave.seek(22);
+                    char numChannels = readLEChar(wave);
+                    assert (numChannels == 1); // MONO
+                    // tv_numChannels.setText("numChannels=" + (numChannels == 1 ? "MONO" : "!MONO"));
 
-            wave.seek(22);
-            char numChannels = this.readLEChar(wave);
-            assert (numChannels == 1); // MONO
-            // tv_numChannels.setText("numChannels=" + (numChannels == 1 ? "MONO" : "!MONO"));
+                    wave.seek(24);
+                    int sampleRate = readLEInt(wave);
+                    assert (sampleRate == _m.sampleRate()); // desired sample rate
+                    // tv_sampleRate.setText("sampleRate=" + (sampleRate == 16000 ? "16kHz" : "!16kHz"));
 
-            wave.seek(24);
-            int sampleRate = this.readLEInt(wave);
-            assert (sampleRate == this._m.sampleRate()); // desired sample rate
-            // tv_sampleRate.setText("sampleRate=" + (sampleRate == 16000 ? "16kHz" : "!16kHz"));
+                    wave.seek(34);
+                    char bitsPerSample = readLEChar(wave);
+                    assert (bitsPerSample == 16); // 16 bits per sample
+                    // tv_bitsPerSample.setText("bitsPerSample=" + (bitsPerSample == 16 ? "16-bits" : "!16-bits" ));
 
-            wave.seek(34);
-            char bitsPerSample = this.readLEChar(wave);
-            assert (bitsPerSample == 16); // 16 bits per sample
-            // tv_bitsPerSample.setText("bitsPerSample=" + (bitsPerSample == 16 ? "16-bits" : "!16-bits" ));
+                    wave.seek(40);
+                    int bufferSize = readLEInt(wave);
+                    assert (bufferSize > 0);
+                    // tv_bufferSize.setText("bufferSize=" + bufferSize);
 
-            wave.seek(40);
-            int bufferSize = this.readLEInt(wave);
-            assert (bufferSize > 0);
-            // tv_bufferSize.setText("bufferSize=" + bufferSize);
+                    wave.seek(44);
+                    byte[] bytes = new byte[bufferSize];
+                    wave.readFully(bytes);
 
-            wave.seek(44);
-            byte[] bytes = new byte[bufferSize];
-            wave.readFully(bytes);
+                    short[] shorts = new short[bytes.length / 2];
+                    // to turn bytes to shorts as either big endian or little endian.
+                    ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(shorts);
 
-            short[] shorts = new short[bytes.length / 2];
-            // to turn bytes to shorts as either big endian or little endian.
-            ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(shorts);
+                    //this._tfliteStatus.setText("Running inference ...");
 
-            this._tfliteStatus.setText("Running inference ...");
+                    long inferenceStartTime = System.currentTimeMillis();
 
-            long inferenceStartTime = System.currentTimeMillis();
+                    String decoded = _m.stt(shorts, shorts.length);
 
-            String decoded = this._m.stt(shorts, shorts.length);
+                    inferenceExecTime[0] = System.currentTimeMillis() - inferenceStartTime;
 
-            inferenceExecTime = System.currentTimeMillis() - inferenceStartTime;
+                    _decodedString.setText("\"..." + decoded + "...\"");
 
-            this._decodedString.setText("\"..." + decoded + "...\"");
+                } catch (FileNotFoundException ex) {
 
-        } catch (FileNotFoundException ex) {
+                } catch (IOException ex) {
 
-        } catch (IOException ex) {
+                } finally {
 
-        } finally {
+                }
 
-        }
+                _tfliteStatus.setText("Finished! Took " + inferenceExecTime[0] + "ms");
+            }
+        });
 
-        this._tfliteStatus.setText("Finished! Took " + inferenceExecTime + "ms");
+
 
         /*this._startInference.setEnabled(true);*/
     }
@@ -169,33 +179,58 @@ public class DeepSpeechActivity extends AppCompatActivity {
             }
         });*/
 
-        rippleBackground=findViewById(R.id.content);
+        rippleBackground = findViewById(R.id.content);
         centerImage = findViewById(R.id.centerImage);
+
+        //Declare the timer
+        t = new Timer();
+
         centerImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!rippleBackground.isRippleAnimationRunning()){
+                if (!rippleBackground.isRippleAnimationRunning()) {
                     rippleBackground.startRippleAnimation();
                     centerImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause_white_56dp));
                     _tfliteStatus.setText("Speak to the microphone...");
                     _decodedString.setText("");
                     hotwordRecorder.startRecording();
-                }else{
+
+                    //Set the schedule function and rate
+                    t.scheduleAtFixedRate(new TimerTask() {
+                                              @Override
+                                              public void run() {
+                                                  //Called each time of some milliseconds(the period parameter)
+                                                  hotwordRecorder.stopRecording();
+                                                  hotwordRecorder.writeWav();
+                                                  doInference("/sdcard/deepspeech3/soloupis.wav");
+                                                  //hotwordRecorder.startRecording();
+                                              }
+                                          },
+                            //Set how long before to start calling the TimerTask (in milliseconds)
+                            0,
+                            //Set the amount of time between each execution (in milliseconds)
+                            2000);
+
+                } else {
                     rippleBackground.stopRippleAnimation();
                     centerImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none_white_56dp));
                     hotwordRecorder.stopRecording();
-                    _tfliteStatus.setText("Wait for the transcription...");
+                    //_tfliteStatus.setText("Wait for the transcription...");
                     hotwordRecorder.writeWav();
+                    doInference("/sdcard/deepspeech3/soloupis.wav");
 
                     Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
                         public void run() {
                             // Actions to do after 500 milliseconds
-                            playAudioFile();
-                            doInference("/sdcard/deepspeech3/soloupis.wav");
+                            //playAudioFile();
+                            //doInference("/sdcard/deepspeech3/soloupis.wav");
 
                         }
-                    }, 500);
+                    }, 100);
+
+                    //Finally stop timer
+                    t.cancel();
                 }
             }
         });

@@ -2,8 +2,11 @@ package org.soloupis.deepspeech;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.os.Bundle;
 
+import android.speech.RecognizerIntent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -11,6 +14,7 @@ import android.widget.EditText;
 import android.widget.Button;
 
 import android.media.MediaPlayer;
+import android.widget.Toast;
 
 import com.skyfishjy.library.RippleBackground;
 
@@ -19,6 +23,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -37,7 +43,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
     private Button _startInference, startRecording, stopRecording;
     private HotwordRecorder hotwordRecorder;
     private RippleBackground rippleBackground;
-    private ImageButton centerImage;
+    private ImageButton centerImage,centerImageGoogle;
 
     private Timer t;
     private String wholeSentence;
@@ -45,6 +51,8 @@ public class DeepSpeechActivity extends AppCompatActivity {
     final int BEAM_WIDTH = 40;/*
     final float LM_ALPHA = 0.75f;
     final float LM_BETA = 1.85f;*/
+
+    private final int REQ_CODE_SPEECH_INPUT = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +107,14 @@ public class DeepSpeechActivity extends AppCompatActivity {
                     //Finally stop timer
                     t.cancel();
                 }
+            }
+        });
+
+        centerImageGoogle = findViewById(R.id.centerImageGoogle);
+        centerImageGoogle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                promptSpeechInput();
             }
         });
 
@@ -208,6 +224,46 @@ public class DeepSpeechActivity extends AppCompatActivity {
 
         if (this._m != null) {
             this._m.freeModel();
+        }
+    }
+
+    /**
+     * Showing google speech input dialog
+     * */
+    private void promptSpeechInput() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
+                getString(R.string.speech_prompt));
+        try {
+            startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
+        } catch (ActivityNotFoundException a) {
+            Toast.makeText(getApplicationContext(),
+                    getString(R.string.speech_not_supported),
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * Receiving speech input
+     * */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case REQ_CODE_SPEECH_INPUT: {
+                if (resultCode == RESULT_OK && null != data) {
+
+                    ArrayList<String> result = data
+                            .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    _decodedString.setText(result.get(0));
+                }
+                break;
+            }
+
         }
     }
 }

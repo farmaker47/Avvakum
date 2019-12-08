@@ -143,14 +143,14 @@
             android:id="@+id/tfliteStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:text="Hello World!"
+            android:layout_gravity="center_horizontal"
             android:layout_marginTop="48dp"
             android:textSize="24sp"
-            android:layout_gravity="center_horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Hello World!" />
 
         <Space
             android:layout_width="match_parent"
@@ -192,8 +192,10 @@
 
         <com.skyfishjy.library.RippleBackground
             android:id="@+id/content"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
             app:rb_color="#0099CC"
             app:rb_duration="3000"
             app:rb_radius="28dp"
@@ -205,9 +207,31 @@
                 android:layout_width="124dp"
                 android:layout_height="124dp"
                 android:layout_centerInParent="true"
-                android:background="@drawable/ic_mic_background"
+                android:background="@drawable/ic_mic_background_blue"
                 android:src="@drawable/ic_mic_none_white_56dp" />
         </com.skyfishjy.library.RippleBackground>
+
+        <com.skyfishjy.library.RippleBackground
+            android:id="@+id/contentGoogle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            app:rb_color="#000"
+            app:rb_duration="3000"
+            app:rb_radius="28dp"
+            app:rb_rippleAmount="4"
+            app:rb_scale="4">
+
+            <ImageButton
+                android:id="@+id/centerImageGoogle"
+                android:layout_width="124dp"
+                android:layout_height="124dp"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/ic_mic_background_black"
+                android:src="@drawable/ic_mic_none_white_56dp" />
+        </com.skyfishjy.library.RippleBackground>
+
 
     </LinearLayout>
 

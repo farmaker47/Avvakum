@@ -58,7 +58,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
         this._audioFile = findViewById(R.id.audioFile);
 
         this._tfliteStatus.setText("Ready! Press mic button...");
-        hotwordRecorder = new HotwordRecorder("hotKey", 5);
+        hotwordRecorder = new HotwordRecorder("hotKey", 0);
 
         rippleBackground = findViewById(R.id.content);
         centerImage = findViewById(R.id.centerImage);

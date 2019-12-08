@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-import android.os.Handler;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -43,9 +42,9 @@ public class DeepSpeechActivity extends AppCompatActivity {
     private Timer t;
     private String wholeSentence;
 
-    final int BEAM_WIDTH = 20;
+    final int BEAM_WIDTH = 1;/*
     final float LM_ALPHA = 0.75f;
-    final float LM_BETA = 1.85f;
+    final float LM_BETA = 1.85f;*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,13 +84,13 @@ public class DeepSpeechActivity extends AppCompatActivity {
                                                   hotwordRecorder.stopRecording();
                                                   hotwordRecorder.writeWav();
                                                   hotwordRecorder.startRecording();
-                                                  doInference("/sdcard/deepspeech3/soloupis.wav");
+                                                  doInference("/sdcard/deepspeech4/soloupis.wav");
                                               }
                                           },
                             //Set how long before to start calling the TimerTask (in milliseconds)
-                            5000,
+                            2000,
                             //Set the amount of time between each execution (in milliseconds)
-                            5000);
+                            2000);
 
                 } else {
                     rippleBackground.stopRippleAnimation();
@@ -128,7 +127,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
     private void doInference(final String audioFile) {
         final long[] inferenceExecTime = {0};
 
-        this.newModel("/sdcard/deepspeech3/output_graph.tflite");
+        this.newModel("/sdcard/deepspeech4/output_graph.tflite");
 
         try {
             RandomAccessFile wave = new RandomAccessFile(audioFile, "r");
@@ -168,7 +167,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
 
             long inferenceStartTime = System.currentTimeMillis();
 
-            wholeSentence += _m.stt(shorts, shorts.length) + ".";
+            wholeSentence += _m.stt(shorts, shorts.length) + ". ";
 
             inferenceExecTime[0] = System.currentTimeMillis() - inferenceStartTime;
 
@@ -191,7 +190,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
     public void playAudioFile() {
         try {
             MediaPlayer mediaPlayer = new MediaPlayer();
-            mediaPlayer.setDataSource("/sdcard/deepspeech3/soloupis.wav");
+            mediaPlayer.setDataSource("/sdcard/deepspeech4/soloupis.wav");
             mediaPlayer.prepare();
             mediaPlayer.start();
         } catch (IOException ex) {

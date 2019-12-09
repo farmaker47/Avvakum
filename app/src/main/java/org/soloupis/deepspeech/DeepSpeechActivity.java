@@ -114,6 +114,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
         centerImageGoogle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                _decodedString.setText("");
                 promptSpeechInput();
             }
         });
@@ -235,6 +236,8 @@ public class DeepSpeechActivity extends AppCompatActivity {
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
                 RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        intent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, 20000);
+        intent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 20000);
         intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
                 getString(R.string.speech_prompt));
         try {

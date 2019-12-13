@@ -59,17 +59,19 @@ public class DeepSpeechActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_deep_speech);
 
-        this._decodedString = findViewById(R.id.decodedString);
-        this._tfliteStatus = findViewById(R.id.tfliteStatus);
+        _decodedString = findViewById(R.id.decodedString);
+        _tfliteStatus = findViewById(R.id.tfliteStatus);
 
-        this._tfliteModel = findViewById(R.id.tfliteModel);
+        _tfliteModel = findViewById(R.id.tfliteModel);
         this._audioFile = findViewById(R.id.audioFile);
 
-        this._tfliteStatus.setText("Ready! Press mic button...");
+        _tfliteStatus.setText("Ready! Press mic button...");
         hotwordRecorder = new HotwordRecorder("hotKey", 0);
 
         rippleBackground = findViewById(R.id.content);
         centerImage = findViewById(R.id.centerImage);
+
+        newModel("/sdcard/deepspeech4/output_graph.tflite");
 
         centerImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,7 +98,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
                                               }
                                           },
                             //Set how long before to start calling the TimerTask (in milliseconds)
-                            2000,
+                            4000,
                             //Set the amount of time between each execution (in milliseconds)
                             4000);
 
@@ -143,8 +145,6 @@ public class DeepSpeechActivity extends AppCompatActivity {
 
     private void doInference(final String audioFile) {
         final long[] inferenceExecTime = {0};
-
-        this.newModel("/sdcard/deepspeech4/output_graph.tflite");
 
         try {
             RandomAccessFile wave = new RandomAccessFile(audioFile, "r");
@@ -238,6 +238,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
         intent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, 20000);
         intent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 20000);
+        intent.putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE,true);
         intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
                 getString(R.string.speech_prompt));
         try {

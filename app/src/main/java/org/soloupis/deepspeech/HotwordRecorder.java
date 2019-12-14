@@ -1,6 +1,8 @@
 package org.soloupis.deepspeech;
 
+import android.content.Context;
 import android.media.AudioFormat;
+import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Environment;
@@ -27,7 +29,7 @@ import java.io.IOException;
  * 7. Call writeConfig()
  */
 public class HotwordRecorder {
-    private int AUDIO_SOURCE = MediaRecorder.AudioSource.VOICE_RECOGNITION;
+    private int AUDIO_SOURCE = MediaRecorder.AudioSource.VOICE_COMMUNICATION;
     private int CHANNEL_MASK = AudioFormat.CHANNEL_IN_MONO;
     private int SAMPLE_RATE = 16000;
     private int ENCODING = AudioFormat.ENCODING_PCM_16BIT;
@@ -44,6 +46,7 @@ public class HotwordRecorder {
     private String mHotwordKey;
     private double[] mSampleLengths;
     private int mSamplesTaken;
+    private Context mContext;
 
     /**
      * Hotword recording constructor.
@@ -51,12 +54,13 @@ public class HotwordRecorder {
      * @param key              Hotword key
      * @param numberRecordings Number of recordings to be taken
      */
-    public HotwordRecorder(String key, int numberRecordings) {
+    public HotwordRecorder(String key, int numberRecordings, Context context) {
         mHotwordKey = key;
         mPcmStream = new ByteArrayOutputStream();
         mRecording = false;
         mSampleLengths = new double[numberRecordings];
         mSamplesTaken = 0;
+        mContext = context;
     }
 
     /**
@@ -98,6 +102,12 @@ public class HotwordRecorder {
                 int readBytes;
                 short[] buffer = new short[BUFFER_SIZE];
 
+                //NEW
+                AudioManager am = (AudioManager)mContext.getSystemService(Context.AUDIO_SERVICE);
+
+                int previousVolume = am.getStreamVolume(AudioManager.STREAM_VOICE_CALL);
+                am.setStreamVolume(AudioManager.STREAM_VOICE_CALL, 20, 0);
+
                 while (mRecording) {
                     readBytes = mRecorder.read(buffer, 0, BUFFER_SIZE);
 
@@ -110,6 +120,8 @@ public class HotwordRecorder {
 
                 mRecorder.release();
                 mRecorder = null;
+                am.setStreamVolume(AudioManager.STREAM_VOICE_CALL, previousVolume, 0);
+
             }
         };
 

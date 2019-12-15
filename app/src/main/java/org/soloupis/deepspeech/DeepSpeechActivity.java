@@ -94,6 +94,8 @@ public class DeepSpeechActivity extends AppCompatActivity {
                     /*long mode = am.getMode();
                     Log.e("MODE", "audio mode " + mode);*/
                     am.setMode(AudioManager.MODE_IN_COMMUNICATION);
+                    am.setSpeakerphoneOn(true);
+                    am.setStreamVolume(AudioManager.STREAM_MUSIC, 12, 0);
 
 
                     Log.e("MODE_after", "audio mode " + am.getMode());

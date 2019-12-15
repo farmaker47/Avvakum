@@ -112,10 +112,12 @@ public class HotwordRecorder {
 
                     while (mRecording) {
                         readBytes = mRecorder.read(buffer, 0, BUFFER_SIZE);
+
+                        //Higher volume of microphone
+                        //https://stackoverflow.com/questions/25441166/how-to-adjust-microphone-sensitivity-while-recording-audio-in-android
                         if (readBytes > 0) {
                             for (int i = 0; i < readBytes; ++i) {
-                                buffer[i] = (short)Math.min((int)(buffer[i] * 7.7), (int)Short.MAX_VALUE);
-                                Log.e("EKTELESI", "oko");
+                                buffer[i] = (short)Math.min((int)(buffer[i] * 17.7), (int)Short.MAX_VALUE);
                             }
                         }
 

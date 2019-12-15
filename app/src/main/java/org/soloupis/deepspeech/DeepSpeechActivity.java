@@ -3,10 +3,13 @@ package org.soloupis.deepspeech;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.os.Bundle;
 
 import android.speech.RecognizerIntent;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -43,10 +46,11 @@ public class DeepSpeechActivity extends AppCompatActivity {
     private Button _startInference, startRecording, stopRecording;
     private HotwordRecorder hotwordRecorder;
     private RippleBackground rippleBackground;
-    private ImageButton centerImage,centerImageGoogle;
+    private ImageButton centerImage, centerImageGoogle;
 
     private Timer t;
     private String wholeSentence;
+    private AudioManager am;
 
     final int BEAM_WIDTH = 40;/*
     final float LM_ALPHA = 0.75f;
@@ -66,7 +70,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
         this._audioFile = findViewById(R.id.audioFile);
 
         _tfliteStatus.setText("Ready! Press mic button...");
-        hotwordRecorder = new HotwordRecorder("hotKey", 0, this);
+        hotwordRecorder = new HotwordRecorder("hotKey", 0, DeepSpeechActivity.this);
 
         rippleBackground = findViewById(R.id.content);
         centerImage = findViewById(R.id.centerImage);
@@ -76,6 +80,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
         centerImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 if (!rippleBackground.isRippleAnimationRunning()) {
                     rippleBackground.startRippleAnimation();
                     centerImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause_white_56dp));
@@ -83,6 +88,15 @@ public class DeepSpeechActivity extends AppCompatActivity {
                     _decodedString.setText("");
                     wholeSentence = "";
                     hotwordRecorder.startRecording();
+                    am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+                    /*am.setStreamVolume(AudioManager.STREAM_MUSIC, 12, 0);
+                    am.setSpeakerphoneOn(true);*/
+                    /*long mode = am.getMode();
+                    Log.e("MODE", "audio mode " + mode);*/
+                    am.setMode(AudioManager.MODE_IN_COMMUNICATION);
+
+
+                    Log.e("MODE_after", "audio mode " + am.getMode());
 
                     //Declare the timer
                     t = new Timer();
@@ -108,6 +122,9 @@ public class DeepSpeechActivity extends AppCompatActivity {
                     hotwordRecorder.stopRecording();
                     //Finally stop timer
                     t.cancel();
+                    //set normal mode of audio manager
+                    am.setMode(AudioManager.MODE_NORMAL);
+                    Log.e("MODE_stop", "audio mode " + am.getMode());
                 }
             }
         });
@@ -230,7 +247,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
 
     /**
      * Showing google speech input dialog
-     * */
+     */
     private void promptSpeechInput() {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
@@ -238,7 +255,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
         intent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, 20000);
         intent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 20000);
-        intent.putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE,true);
+        intent.putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true);
         intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
                 getString(R.string.speech_prompt));
         try {
@@ -252,7 +269,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
 
     /**
      * Receiving speech input
-     * */
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

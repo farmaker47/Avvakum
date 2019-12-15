@@ -35,9 +35,9 @@ public class HotwordRecorder {
     private int ENCODING = AudioFormat.ENCODING_PCM_16BIT;
     private int BUFFER_SIZE = AudioRecord.getMinBufferSize(SAMPLE_RATE, CHANNEL_MASK, ENCODING);
     private AudioFormat AUDIO_FORMAT = new AudioFormat.Builder().setEncoding(ENCODING)
-                                                                .setSampleRate(SAMPLE_RATE)
-                                                                .setChannelMask(CHANNEL_MASK)
-                                                                .build();
+            .setSampleRate(SAMPLE_RATE)
+            .setChannelMask(CHANNEL_MASK)
+            .build();
 
     private ByteArrayOutputStream mPcmStream;
     private AudioRecord mRecorder;
@@ -74,9 +74,9 @@ public class HotwordRecorder {
 
         mPcmStream.reset();
         mRecorder = new AudioRecord.Builder().setAudioSource(AUDIO_SOURCE)
-                                             .setAudioFormat(AUDIO_FORMAT)
-                                             .setBufferSizeInBytes(BUFFER_SIZE)
-                                             .build();
+                .setAudioFormat(AUDIO_FORMAT)
+                .setBufferSizeInBytes(BUFFER_SIZE)
+                .build();
         mRecorder.startRecording();
         mRecording = true;
         mThread = new Thread(readAudio);
@@ -97,33 +97,35 @@ public class HotwordRecorder {
      * Read audio from the audio recorder stream.
      */
     private Runnable readAudio =
-        new Runnable(){
-            public void run(){
-                int readBytes;
-                short[] buffer = new short[BUFFER_SIZE];
+            new Runnable() {
+                public void run() {
+                    int readBytes;
+                    short[] buffer = new short[BUFFER_SIZE];
 
-                //NEW
-                AudioManager am = (AudioManager)mContext.getSystemService(Context.AUDIO_SERVICE);
+                    //NEW
 
-                int previousVolume = am.getStreamVolume(AudioManager.STREAM_VOICE_CALL);
-                am.setStreamVolume(AudioManager.STREAM_VOICE_CALL, 20, 0);
+                    /*int maxStremVol = am.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+                    Log.e("STREAM", String.valueOf(maxStremVol));
 
-                while (mRecording) {
-                    readBytes = mRecorder.read(buffer, 0, BUFFER_SIZE);
+                    int previousVolume = am.getStreamVolume(AudioManager.STREAM_MUSIC);
+                    am.setStreamVolume(AudioManager.STREAM_MUSIC, 15, 0);*/
 
-                    if (readBytes != AudioRecord.ERROR_INVALID_OPERATION) {
-                        for (short s : buffer) {
-                            writeShort(mPcmStream, s);
+                    while (mRecording) {
+                        readBytes = mRecorder.read(buffer, 0, BUFFER_SIZE);
+
+                        if (readBytes != AudioRecord.ERROR_INVALID_OPERATION) {
+                            for (short s : buffer) {
+                                writeShort(mPcmStream, s);
+                            }
                         }
                     }
+
+                    mRecorder.release();
+                    mRecorder = null;
+                    /*am.setStreamVolume(AudioManager.STREAM_MUSIC, previousVolume, 0);*/
+
                 }
-
-                mRecorder.release();
-                mRecorder = null;
-                am.setStreamVolume(AudioManager.STREAM_VOICE_CALL, previousVolume, 0);
-
-            }
-        };
+            };
 
     /**
      * Convert raw PCM data to a wav file.
@@ -141,12 +143,12 @@ public class HotwordRecorder {
         writeString(stream, "WAVE"); // format
         writeString(stream, "fmt "); // subchunk 1 id
         writeInt(stream, 16); // subchunk 1 size
-        writeShort(stream, (short)1); // audio format (1 = PCM)
-        writeShort(stream, (short)1); // number of channels
+        writeShort(stream, (short) 1); // audio format (1 = PCM)
+        writeShort(stream, (short) 1); // number of channels
         writeInt(stream, SAMPLE_RATE); // sample rate
         writeInt(stream, SAMPLE_RATE * 2); // byte rate
-        writeShort(stream, (short)2); // block align
-        writeShort(stream, (short)16); // bits per sample
+        writeShort(stream, (short) 2); // block align
+        writeShort(stream, (short) 16); // bits per sample
         writeString(stream, "data"); // subchunk 2 id
         writeInt(stream, pcmAudio.length); // subchunk 2 size
         stream.write(pcmAudio);
@@ -265,11 +267,11 @@ public class HotwordRecorder {
      *
      * @throws IOException
      */
-    public void writeWav(){
+    public void writeWav() {
         byte[] wav = new byte[0];
         try {
             wav = pcmToWav();
-            Log.i("WAV_size",String.valueOf(wav.length));
+            Log.i("WAV_size", String.valueOf(wav.length));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -278,7 +280,7 @@ public class HotwordRecorder {
         try {
             try {
                 stream = new FileOutputStream(Environment.getExternalStorageDirectory().toString() +
-                        "/deepspeech4/soloupis.wav",false);
+                        "/deepspeech4/soloupis.wav", false);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }

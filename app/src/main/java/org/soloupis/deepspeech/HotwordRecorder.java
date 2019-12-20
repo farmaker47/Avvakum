@@ -5,6 +5,8 @@ import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
+import android.media.audiofx.AcousticEchoCanceler;
+import android.media.audiofx.AutomaticGainControl;
 import android.media.audiofx.NoiseSuppressor;
 import android.os.Environment;
 import android.util.Log;
@@ -48,6 +50,8 @@ public class HotwordRecorder {
     private double[] mSampleLengths;
     private int mSamplesTaken;
     private Context mContext;
+    private NoiseSuppressor noiseSuppressor;
+    private AcousticEchoCanceler acousticEchoCanceler;
 
     /**
      * Hotword recording constructor.
@@ -79,7 +83,12 @@ public class HotwordRecorder {
                 .setBufferSizeInBytes(BUFFER_SIZE)
                 .build();
         /*Log.e("NOISE", String.valueOf(NoiseSuppressor.isAvailable()));*/
-        NoiseSuppressor.create(mRecorder.getAudioSessionId());
+        noiseSuppressor = NoiseSuppressor.create(mRecorder.getAudioSessionId());
+        noiseSuppressor.setEnabled(true);
+
+        acousticEchoCanceler = AcousticEchoCanceler.create(mRecorder.getAudioSessionId());
+        acousticEchoCanceler.setEnabled(true);
+
         mRecorder.startRecording();
         mRecording = true;
         mThread = new Thread(readAudio);

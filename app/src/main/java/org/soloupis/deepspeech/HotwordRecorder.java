@@ -83,11 +83,11 @@ public class HotwordRecorder {
                 .setBufferSizeInBytes(BUFFER_SIZE)
                 .build();
         /*Log.e("NOISE", String.valueOf(NoiseSuppressor.isAvailable()));*/
-        noiseSuppressor = NoiseSuppressor.create(mRecorder.getAudioSessionId());
+        /*noiseSuppressor = NoiseSuppressor.create(mRecorder.getAudioSessionId());
         noiseSuppressor.setEnabled(true);
 
         acousticEchoCanceler = AcousticEchoCanceler.create(mRecorder.getAudioSessionId());
-        acousticEchoCanceler.setEnabled(true);
+        acousticEchoCanceler.setEnabled(true);*/
 
         mRecorder.startRecording();
         mRecording = true;

@@ -77,6 +77,9 @@ public class DeepSpeechActivity extends AppCompatActivity {
 
         newModel("/sdcard/deepspeech4/output_graph.tflite");
 
+        //Noise suppression
+        ((AudioManager)getSystemService(Context.AUDIO_SERVICE)).setParameters("noise_suppression=on");
+
         centerImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

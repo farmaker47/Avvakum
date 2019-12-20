@@ -114,9 +114,9 @@ public class DeepSpeechActivity extends AppCompatActivity {
                                               }
                                           },
                             //Set how long before to start calling the TimerTask (in milliseconds)
-                            8000,
+                            7000,
                             //Set the amount of time between each execution (in milliseconds)
-                            8000);
+                            7000);
 
                 } else {
                     rippleBackground.stopRippleAnimation();

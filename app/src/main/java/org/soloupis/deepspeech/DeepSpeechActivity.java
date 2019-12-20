@@ -194,11 +194,15 @@ public class DeepSpeechActivity extends AppCompatActivity {
             byte[] bytes = new byte[bufferSize];
             wave.readFully(bytes);
 
+            Log.e("BYTES", String.valueOf(bytes.length));
+
             short[] shorts = new short[bytes.length / 2];
             // to turn bytes to shorts as either big endian or little endian.
             ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(shorts);
 
             long inferenceStartTime = System.currentTimeMillis();
+
+            Log.e("SHORTS", String.valueOf(shorts.length));
 
             wholeSentence += _m.stt(shorts, shorts.length) + ". ";
 

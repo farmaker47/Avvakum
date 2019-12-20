@@ -5,6 +5,7 @@ import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
+import android.media.audiofx.NoiseSuppressor;
 import android.os.Environment;
 import android.util.Log;
 
@@ -77,6 +78,8 @@ public class HotwordRecorder {
                 .setAudioFormat(AUDIO_FORMAT)
                 .setBufferSizeInBytes(BUFFER_SIZE)
                 .build();
+        /*Log.e("NOISE", String.valueOf(NoiseSuppressor.isAvailable()));*/
+        NoiseSuppressor.create(mRecorder.getAudioSessionId());
         mRecorder.startRecording();
         mRecording = true;
         mThread = new Thread(readAudio);

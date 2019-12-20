@@ -32,7 +32,7 @@ import java.io.IOException;
  * 7. Call writeConfig()
  */
 public class HotwordRecorder {
-    private int AUDIO_SOURCE = MediaRecorder.AudioSource.VOICE_COMMUNICATION;
+    private int AUDIO_SOURCE = MediaRecorder.AudioSource.VOICE_RECOGNITION;
     private int CHANNEL_MASK = AudioFormat.CHANNEL_IN_MONO;
     private int SAMPLE_RATE = 16000;
     private int ENCODING = AudioFormat.ENCODING_PCM_16BIT;

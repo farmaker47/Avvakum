@@ -6,6 +6,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Bundle;
 
 import android.speech.RecognizerIntent;
@@ -52,11 +53,15 @@ public class DeepSpeechActivity extends AppCompatActivity {
     private String wholeSentence;
     private AudioManager am;
 
-    final int BEAM_WIDTH = 40;/*
+    final int BEAM_WIDTH = 50;/*
     final float LM_ALPHA = 0.75f;
     final float LM_BETA = 1.85f;*/
 
     private final int REQ_CODE_SPEECH_INPUT = 100;
+
+    //Soundpool
+    SoundPool sp;
+    int explosion = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +83,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
         newModel("/sdcard/deepspeech4/output_graph.tflite");
 
         //Noise suppression
-        ((AudioManager)getSystemService(Context.AUDIO_SERVICE)).setParameters("noise_suppression=on");
+        ((AudioManager) getSystemService(Context.AUDIO_SERVICE)).setParameters("noise_suppression=on");
 
         centerImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,6 +144,15 @@ public class DeepSpeechActivity extends AppCompatActivity {
                 promptSpeechInput();
             }
         });
+
+        //SoundPool
+        sp = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
+
+        explosion = sp.load("/sdcard/deepspeech4/soloupis.wav", 0);
+        if (explosion != 0) {
+
+            sp.play(explosion, 1, 1, 0, 0, 1.0f);
+        }
 
     }
 

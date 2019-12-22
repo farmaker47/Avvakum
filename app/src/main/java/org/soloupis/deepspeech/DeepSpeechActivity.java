@@ -53,7 +53,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
     private String wholeSentence;
     private AudioManager am;
 
-    final int BEAM_WIDTH = 50;/*
+    final int BEAM_WIDTH = 100;/*
     final float LM_ALPHA = 0.75f;
     final float LM_BETA = 1.85f;*/
 
@@ -119,9 +119,9 @@ public class DeepSpeechActivity extends AppCompatActivity {
                                               }
                                           },
                             //Set how long before to start calling the TimerTask (in milliseconds)
-                            27000,
+                            7000,
                             //Set the amount of time between each execution (in milliseconds)
-                            27000);
+                            7000);
 
                 } else {
                     rippleBackground.stopRippleAnimation();

@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.EditText;
@@ -53,7 +54,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
     private String wholeSentence;
     private AudioManager am;
 
-    final int BEAM_WIDTH = 100;/*
+    final int BEAM_WIDTH = 50;/*
     final float LM_ALPHA = 0.75f;
     final float LM_BETA = 1.85f;*/
 
@@ -66,6 +67,9 @@ public class DeepSpeechActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+
         setContentView(R.layout.activity_deep_speech);
 
         _decodedString = findViewById(R.id.decodedString);

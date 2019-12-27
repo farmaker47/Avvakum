@@ -131,6 +131,8 @@ public class DeepSpeechActivity extends AppCompatActivity {
                     rippleBackground.stopRippleAnimation();
                     centerImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none_white_56dp));
                     hotwordRecorder.stopRecording();
+                    hotwordRecorder.writeWav();
+                    doInference("/sdcard/deepspeech4/soloupis.wav");
                     //Finally stop timer
                     t.cancel();
                     /*//set normal mode of audio manager
@@ -215,7 +217,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
             byte[] bytes = new byte[bufferSize];
             wave.readFully(bytes);
 
-            Log.e("BYTES", String.valueOf(bytes.length));
+            Log.i("BYTES", String.valueOf(bytes.length));
 
             short[] shorts = new short[bytes.length / 2];
             // to turn bytes to shorts as either big endian or little endian.
@@ -223,7 +225,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
 
             long inferenceStartTime = System.currentTimeMillis();
 
-            Log.e("SHORTS", String.valueOf(shorts.length));
+            Log.i("SHORTS", String.valueOf(shorts.length));
 
             wholeSentence += _m.stt(shorts, shorts.length) + ". ";
 

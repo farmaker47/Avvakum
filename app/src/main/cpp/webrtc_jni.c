@@ -21,17 +21,17 @@ JNIEXPORT jint JNICALL Java_org_soloupis_deepspeech_Vad_start (JNIEnv * env, job
     return ret_state;
 }
 
-JNIEXPORT jint JNICALL Java_com_mozilla_speechlibrary_Vad_stop(JNIEnv * env, jobject object) {
+JNIEXPORT jint JNICALL Java_org_soloupis_deepspeech_Vad_stop(JNIEnv * env, jobject object) {
     if (WebRtcVad_Free(internalHandle) == 0) {
         internalHandle = NULL;
     }
 }
 
-JNIEXPORT jint JNICALL Java_com_mozilla_speechlibrary_Vad_isSilence(JNIEnv * env, jobject object) {
+JNIEXPORT jint JNICALL Java_org_soloupis_deepspeech_Vad_isSilence(JNIEnv * env, jobject object) {
     return resultVad;
 }
 
-JNIEXPORT jint JNICALL Java_com_mozilla_speechlibrary_Vad_feed(JNIEnv * env, jobject object, jshortArray bytes, jint size) {
+JNIEXPORT jint JNICALL Java_org_soloupis_deepspeech_Vad_feed(JNIEnv * env, jobject object, jshortArray bytes, jint size) {
     jshort *arrayElements = (*env)->GetShortArrayElements(env, bytes, 0);
     resultVad = WebRtcVad_Process(internalHandle, 16000, arrayElements, size);
     (*env)->ReleaseShortArrayElements(env, bytes, arrayElements, 0);

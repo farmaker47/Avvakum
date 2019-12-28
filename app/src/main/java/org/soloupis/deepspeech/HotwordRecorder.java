@@ -104,9 +104,10 @@ public class HotwordRecorder {
         if (mRecorder != null && mRecorder.getState() == AudioRecord.STATE_INITIALIZED) {
             mRecording = false;
             mRecorder.stop();
-            //writeWav(mPcmStream);
-            AsyncTaskRunner runner = new AsyncTaskRunner();
-            runner.execute(mPcmStream);
+            writeWav(mPcmStream);
+            /*AsyncTaskRunner runner = new AsyncTaskRunner();
+            runner.execute(mPcmStream);*/
+
         }
     }
 

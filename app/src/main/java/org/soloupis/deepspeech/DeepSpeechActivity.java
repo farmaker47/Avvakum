@@ -64,6 +64,9 @@ public class DeepSpeechActivity extends AppCompatActivity {
     SoundPool sp;
     int explosion = 0;
 
+    //Vad
+    private Vad mVad;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -159,6 +162,8 @@ public class DeepSpeechActivity extends AppCompatActivity {
 
             sp.play(explosion, 1, 1, 0, 0, 1.0f);
         }
+
+        mVad = new Vad();
 
     }
 

@@ -120,7 +120,6 @@ public class DeepSpeechActivity extends AppCompatActivity {
                                               public void run() {
                                                   //Called each time of some milliseconds(the period parameter)
                                                   hotwordRecorder.stopRecording();
-                                                  hotwordRecorder.writeWav();
                                                   hotwordRecorder.startRecording();
                                                   doInference("/sdcard/deepspeech4/soloupis.wav");
                                               }

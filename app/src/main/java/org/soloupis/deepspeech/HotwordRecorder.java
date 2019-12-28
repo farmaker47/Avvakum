@@ -8,8 +8,10 @@ import android.media.MediaRecorder;
 import android.media.audiofx.AcousticEchoCanceler;
 import android.media.audiofx.AutomaticGainControl;
 import android.media.audiofx.NoiseSuppressor;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -102,6 +104,9 @@ public class HotwordRecorder {
         if (mRecorder != null && mRecorder.getState() == AudioRecord.STATE_INITIALIZED) {
             mRecording = false;
             mRecorder.stop();
+            //writeWav(mPcmStream);
+            AsyncTaskRunner runner = new AsyncTaskRunner();
+            runner.execute(mPcmStream);
         }
     }
 
@@ -154,9 +159,9 @@ public class HotwordRecorder {
      *
      * @return Byte array containing wav file data.
      */
-    private byte[] pcmToWav() throws IOException {
+    private byte[] pcmToWav(ByteArrayOutputStream byteArrayOutputStream) throws IOException {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        byte[] pcmAudio = mPcmStream.toByteArray();
+        byte[] pcmAudio = byteArrayOutputStream.toByteArray();
 
         writeString(stream, "RIFF"); // chunk id
         writeInt(stream, 36 + pcmAudio.length); // chunk size
@@ -287,10 +292,10 @@ public class HotwordRecorder {
      *
      * @throws IOException
      */
-    public void writeWav() {
+    public void writeWav(ByteArrayOutputStream byteArrayOutputStream) {
         byte[] wav = new byte[0];
         try {
-            wav = pcmToWav();
+            wav = pcmToWav(byteArrayOutputStream);
             Log.i("WAV_size", String.valueOf(wav.length));
         } catch (IOException e) {
             e.printStackTrace();
@@ -337,6 +342,25 @@ public class HotwordRecorder {
             if (stream != null) {
                 stream.close();
             }
+        }
+    }
+
+    //AsyncTask for WriteWav
+    private class AsyncTaskRunner extends AsyncTask<ByteArrayOutputStream,String,String>{
+
+        @Override
+        protected String doInBackground(ByteArrayOutputStream... byteArrayOutputStreams) {
+
+            String string = "Write Wav OK";
+
+            writeWav(byteArrayOutputStreams[0]);
+
+            return string;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            Toast.makeText(mContext, s, Toast.LENGTH_SHORT).show();
         }
     }
 }

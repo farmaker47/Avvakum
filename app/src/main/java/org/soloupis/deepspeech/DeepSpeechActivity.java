@@ -130,9 +130,9 @@ public class DeepSpeechActivity extends AppCompatActivity {
                 } else {
                     rippleBackground.stopRippleAnimation();
                     centerImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none_white_56dp));
-                    hotwordRecorder.stopRecording();
+                    hotwordRecorder.stopRecording();/*
                     hotwordRecorder.writeWav();
-                    doInference("/sdcard/deepspeech4/soloupis.wav");
+                    doInference("/sdcard/deepspeech4/soloupis.wav");*/
                     //Finally stop timer
                     t.cancel();
                     /*//set normal mode of audio manager

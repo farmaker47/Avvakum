@@ -74,12 +74,8 @@ public class HotwordRecorder {
      * Start the recording process.
      */
     public void startRecording() {
-        /*if (mRecorder != null && mRecorder.getState() == AudioRecord.STATE_INITIALIZED) {
-            mRecorder.stop();
-            mRecorder.release();
-        }*/
 
-        mPcmStream.reset();
+        mPcmStream = new ByteArrayOutputStream();
         mRecorder = new AudioRecord.Builder().setAudioSource(AUDIO_SOURCE)
                 .setAudioFormat(AUDIO_FORMAT)
                 .setBufferSizeInBytes(BUFFER_SIZE)
@@ -104,9 +100,11 @@ public class HotwordRecorder {
         if (mRecorder != null && mRecorder.getState() == AudioRecord.STATE_INITIALIZED) {
             mRecording = false;
             mRecorder.stop();
-            writeWav(mPcmStream);
-            /*AsyncTaskRunner runner = new AsyncTaskRunner();
-            runner.execute(mPcmStream);*/
+            Log.e("STREAM_PCM", String.valueOf(mPcmStream.size()));
+            /*writeWav(mPcmStream);*/
+            AsyncTaskRunner runner = new AsyncTaskRunner();
+            runner.execute(mPcmStream);
+            //mPcmStream.reset();
 
         }
     }
@@ -135,7 +133,7 @@ public class HotwordRecorder {
                         //https://stackoverflow.com/questions/25441166/how-to-adjust-microphone-sensitivity-while-recording-audio-in-android
                         if (readBytes > 0) {
                             for (int i = 0; i < readBytes; ++i) {
-                                buffer[i] = (short)Math.min((int)(buffer[i] * 7.0), (int)Short.MAX_VALUE);
+                                buffer[i] = (short) Math.min((int) (buffer[i] * 7.0), (int) Short.MAX_VALUE);
                             }
                         }
 
@@ -347,12 +345,13 @@ public class HotwordRecorder {
     }
 
     //AsyncTask for WriteWav
-    private class AsyncTaskRunner extends AsyncTask<ByteArrayOutputStream,String,String>{
+    private class AsyncTaskRunner extends AsyncTask<ByteArrayOutputStream, String, String> {
 
         @Override
         protected String doInBackground(ByteArrayOutputStream... byteArrayOutputStreams) {
 
             String string = "Write Wav OK";
+            Log.e("ASYNC_BACK",String.valueOf(byteArrayOutputStreams[0].size()));
 
             writeWav(byteArrayOutputStreams[0]);
 

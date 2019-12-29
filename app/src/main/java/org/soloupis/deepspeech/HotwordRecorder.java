@@ -80,12 +80,6 @@ public class HotwordRecorder {
                 .setAudioFormat(AUDIO_FORMAT)
                 .setBufferSizeInBytes(BUFFER_SIZE)
                 .build();
-        /*Log.e("NOISE", String.valueOf(NoiseSuppressor.isAvailable()));*/
-        /*noiseSuppressor = NoiseSuppressor.create(mRecorder.getAudioSessionId());
-        noiseSuppressor.setEnabled(true);
-
-        acousticEchoCanceler = AcousticEchoCanceler.create(mRecorder.getAudioSessionId());
-        acousticEchoCanceler.setEnabled(true);*/
 
         mRecorder.startRecording();
         mRecording = true;
@@ -100,11 +94,10 @@ public class HotwordRecorder {
         if (mRecorder != null && mRecorder.getState() == AudioRecord.STATE_INITIALIZED) {
             mRecording = false;
             mRecorder.stop();
-            Log.e("STREAM_PCM", String.valueOf(mPcmStream.size()));
-            /*writeWav(mPcmStream);*/
+            Log.i("STREAM_PCM", String.valueOf(mPcmStream.size()));
+
             AsyncTaskRunner runner = new AsyncTaskRunner();
             runner.execute(mPcmStream);
-            //mPcmStream.reset();
 
         }
     }
@@ -117,14 +110,6 @@ public class HotwordRecorder {
                 public void run() {
                     int readBytes;
                     short[] buffer = new short[BUFFER_SIZE];
-
-                    //NEW
-
-                    /*int maxStremVol = am.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-                    Log.e("STREAM", String.valueOf(maxStremVol));
-
-                    int previousVolume = am.getStreamVolume(AudioManager.STREAM_MUSIC);
-                    am.setStreamVolume(AudioManager.STREAM_MUSIC, 15, 0);*/
 
                     while (mRecording) {
                         readBytes = mRecorder.read(buffer, 0, BUFFER_SIZE);
@@ -146,7 +131,6 @@ public class HotwordRecorder {
 
                     mRecorder.release();
                     mRecorder = null;
-                    /*am.setStreamVolume(AudioManager.STREAM_MUSIC, previousVolume, 0);*/
 
                 }
             };
@@ -350,17 +334,16 @@ public class HotwordRecorder {
         @Override
         protected String doInBackground(ByteArrayOutputStream... byteArrayOutputStreams) {
 
-            String string = "Write Wav OK";
-            Log.e("ASYNC_BACK",String.valueOf(byteArrayOutputStreams[0].size()));
+            Log.i("ASYNC_BACK",String.valueOf(byteArrayOutputStreams[0].size()));
 
             writeWav(byteArrayOutputStreams[0]);
 
-            return string;
+            return null;
         }
 
         @Override
         protected void onPostExecute(String s) {
-            Toast.makeText(mContext, s, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(mContext, s, Toast.LENGTH_SHORT).show();
         }
     }
 }

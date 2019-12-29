@@ -103,14 +103,6 @@ public class DeepSpeechActivity extends AppCompatActivity {
                     _decodedString.setText("");
                     wholeSentence = "";
                     hotwordRecorder.startRecording();
-                    /*am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);*/
-                    /*am.setStreamVolume(AudioManager.STREAM_MUSIC, 12, 0);
-                    am.setSpeakerphoneOn(true);*/
-                    /*long mode = am.getMode();
-                    Log.e("MODE", "audio mode " + mode);*/
-                    /*am.setMode(AudioManager.MODE_IN_COMMUNICATION);
-                    am.setSpeakerphoneOn(true);
-                    am.setStreamVolume(AudioManager.STREAM_MUSIC, 12, 0);*/
 
                     //Declare the timer
                     t = new Timer();
@@ -132,14 +124,12 @@ public class DeepSpeechActivity extends AppCompatActivity {
                 } else {
                     rippleBackground.stopRippleAnimation();
                     centerImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none_white_56dp));
-                    hotwordRecorder.stopRecording();/*
-                    hotwordRecorder.writeWav();
-                    doInference("/sdcard/deepspeech4/soloupis.wav");*/
+                    hotwordRecorder.stopRecording();
+                    doInference("/sdcard/deepspeech4/soloupis.wav");
+
                     //Finally stop timer
                     t.cancel();
-                    /*//set normal mode of audio manager
-                    am.setMode(AudioManager.MODE_NORMAL);
-                    Log.e("MODE_stop", "audio mode " + am.getMode());*/
+
                 }
             }
         });

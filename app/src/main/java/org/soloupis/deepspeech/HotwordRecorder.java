@@ -75,7 +75,6 @@ public class HotwordRecorder {
      */
     public void startRecording() {
 
-        mPcmStream = new ByteArrayOutputStream();
         mRecorder = new AudioRecord.Builder().setAudioSource(AUDIO_SOURCE)
                 .setAudioFormat(AUDIO_FORMAT)
                 .setBufferSizeInBytes(BUFFER_SIZE)
@@ -99,6 +98,8 @@ public class HotwordRecorder {
             AsyncTaskRunner runner = new AsyncTaskRunner();
             runner.execute(mPcmStream);
 
+            mPcmStream = new ByteArrayOutputStream();
+
         }
     }
 
@@ -118,7 +119,7 @@ public class HotwordRecorder {
                         //https://stackoverflow.com/questions/25441166/how-to-adjust-microphone-sensitivity-while-recording-audio-in-android
                         if (readBytes > 0) {
                             for (int i = 0; i < readBytes; ++i) {
-                                buffer[i] = (short) Math.min((int) (buffer[i] * 7.0), (int) Short.MAX_VALUE);
+                                buffer[i] = (short) Math.min((int) (buffer[i] * 6.0), (int) Short.MAX_VALUE);
                             }
                         }
 

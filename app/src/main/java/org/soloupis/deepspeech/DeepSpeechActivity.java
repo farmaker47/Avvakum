@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import android.speech.RecognizerIntent;
@@ -23,6 +24,7 @@ import android.widget.Toast;
 
 import com.skyfishjy.library.RippleBackground;
 
+import java.io.ByteArrayOutputStream;
 import java.io.RandomAccessFile;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -51,7 +53,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
     private ImageButton centerImage, centerImageGoogle;
 
     private Timer t;
-    private String wholeSentence;
+    private String wholeSentence,inferenceString;
     private AudioManager am;
 
     final int BEAM_WIDTH = 50;/*
@@ -83,7 +85,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
 
         _tfliteStatus.setText("Ready! Press mic button...");
         hotwordRecorder = new HotwordRecorder("hotKey", 0, DeepSpeechActivity.this);
-
+        inferenceString = "/sdcard/deepspeech4/soloupis.wav";
         rippleBackground = findViewById(R.id.content);
         centerImage = findViewById(R.id.centerImage);
 
@@ -113,7 +115,8 @@ public class DeepSpeechActivity extends AppCompatActivity {
                                                   //Called each time of some milliseconds(the period parameter)
                                                   hotwordRecorder.stopRecording();
                                                   hotwordRecorder.startRecording();
-                                                  doInference("/sdcard/deepspeech4/soloupis.wav");
+                                                  AsyncTaskRunner runner = new AsyncTaskRunner();
+                                                  runner.execute(inferenceString);
                                               }
                                           },
                             //Set how long before to start calling the TimerTask (in milliseconds)
@@ -125,7 +128,8 @@ public class DeepSpeechActivity extends AppCompatActivity {
                     rippleBackground.stopRippleAnimation();
                     centerImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none_white_56dp));
                     hotwordRecorder.stopRecording();
-                    doInference("/sdcard/deepspeech4/soloupis.wav");
+                    AsyncTaskRunner runner = new AsyncTaskRunner();
+                    runner.execute(inferenceString);
 
                     //Finally stop timer
                     t.cancel();
@@ -146,7 +150,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
         //SoundPool
         sp = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
 
-        explosion = sp.load("/sdcard/deepspeech4/soloupis.wav", 0);
+        explosion = sp.load(inferenceString, 0);
         if (explosion != 0) {
 
             sp.play(explosion, 1, 1, 0, 0, 1.0f);
@@ -244,7 +248,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
     public void playAudioFile() {
         try {
             MediaPlayer mediaPlayer = new MediaPlayer();
-            mediaPlayer.setDataSource("/sdcard/deepspeech4/soloupis.wav");
+            mediaPlayer.setDataSource(inferenceString);
             mediaPlayer.prepare();
             mediaPlayer.start();
         } catch (IOException ex) {
@@ -305,6 +309,18 @@ public class DeepSpeechActivity extends AppCompatActivity {
                 break;
             }
 
+        }
+    }
+
+    //AsyncTask for WriteWav
+    private class AsyncTaskRunner extends AsyncTask<String, String, String> {
+
+        @Override
+        protected String doInBackground(String... strings) {
+
+            doInference(strings[0]);
+
+            return null;
         }
     }
 }

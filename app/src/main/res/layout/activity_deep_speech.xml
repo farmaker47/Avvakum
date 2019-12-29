@@ -156,14 +156,20 @@
             android:layout_width="match_parent"
             android:layout_height="@android:dimen/app_icon_size" />
 
-        <TextView
-            android:id="@+id/decodedString"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="36dp"
-            android:textSize="24sp"
-            android:textStyle="italic|bold" />
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="160dp">
+
+            <TextView
+                android:id="@+id/decodedString"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|center_vertical"
+                android:layout_margin="36dp"
+                android:padding="4dp"
+                android:textSize="24sp"
+                android:textStyle="italic|bold" />
+        </ScrollView>
 
         <Space
             android:layout_width="match_parent"

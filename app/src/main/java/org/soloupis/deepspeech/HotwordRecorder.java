@@ -123,6 +123,7 @@ public class HotwordRecorder {
                             }
                         }
 
+
                         if (readBytes != AudioRecord.ERROR_INVALID_OPERATION) {
                             for (short s : buffer) {
                                 writeShort(mPcmStream, s);

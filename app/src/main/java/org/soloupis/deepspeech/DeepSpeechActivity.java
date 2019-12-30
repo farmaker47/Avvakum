@@ -53,7 +53,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
     private ImageButton centerImage, centerImageGoogle;
 
     private Timer t;
-    private String wholeSentence,inferenceString;
+    private String wholeSentence, inferenceString;
     private AudioManager am;
 
     final int BEAM_WIDTH = 50;/*
@@ -79,16 +79,17 @@ public class DeepSpeechActivity extends AppCompatActivity {
 
         _decodedString = findViewById(R.id.decodedString);
         _tfliteStatus = findViewById(R.id.tfliteStatus);
-
         _tfliteModel = findViewById(R.id.tfliteModel);
         this._audioFile = findViewById(R.id.audioFile);
-
-        _tfliteStatus.setText("Ready! Press mic button...");
-        hotwordRecorder = new HotwordRecorder("hotKey", 0, DeepSpeechActivity.this);
-        inferenceString = "/sdcard/deepspeech4/soloupis.wav";
         rippleBackground = findViewById(R.id.content);
         centerImage = findViewById(R.id.centerImage);
 
+        _tfliteStatus.setText("Ready! Press mic button...");
+        mVad = new Vad();
+        int arxiVad = mVad.start();
+        hotwordRecorder = new HotwordRecorder("hotKey", 0, DeepSpeechActivity.this, mVad);
+
+        inferenceString = "/sdcard/deepspeech4/soloupis.wav";
         newModel("/sdcard/deepspeech4/output_graph.tflite");
 
         //Noise suppression
@@ -138,8 +139,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
             }
         });
 
-        centerImageGoogle = findViewById(R.id.centerImageGoogle);
-        centerImageGoogle.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.centerImageGoogle).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 _decodedString.setText("");
@@ -155,9 +155,6 @@ public class DeepSpeechActivity extends AppCompatActivity {
 
             sp.play(explosion, 1, 1, 0, 0, 1.0f);
         }
-
-        mVad = new Vad();
-
     }
 
     private char readLEChar(RandomAccessFile f) throws IOException {

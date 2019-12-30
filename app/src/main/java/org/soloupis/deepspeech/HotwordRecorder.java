@@ -54,6 +54,7 @@ public class HotwordRecorder {
     private Context mContext;
     private NoiseSuppressor noiseSuppressor;
     private AcousticEchoCanceler acousticEchoCanceler;
+    private Vad mVad;
 
     /**
      * Hotword recording constructor.
@@ -61,13 +62,14 @@ public class HotwordRecorder {
      * @param key              Hotword key
      * @param numberRecordings Number of recordings to be taken
      */
-    public HotwordRecorder(String key, int numberRecordings, Context context) {
+    public HotwordRecorder(String key, int numberRecordings, Context context, Vad vad) {
         mHotwordKey = key;
         mPcmStream = new ByteArrayOutputStream();
         mRecording = false;
         mSampleLengths = new double[numberRecordings];
         mSamplesTaken = 0;
         mContext = context;
+        mVad = vad;
     }
 
     /**

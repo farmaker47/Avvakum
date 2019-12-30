@@ -10,6 +10,7 @@ import android.media.audiofx.AutomaticGainControl;
 import android.media.audiofx.NoiseSuppressor;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.os.Process;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -20,6 +21,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * Hotword recorder.
@@ -47,14 +49,20 @@ public class HotwordRecorder {
     private ByteArrayOutputStream mPcmStream;
     private AudioRecord mRecorder;
     private boolean mRecording;
-    private Thread mThread;
+    private Thread mThread,mVadThread;
     private String mHotwordKey;
     private double[] mSampleLengths;
     private int mSamplesTaken;
     private Context mContext;
-    private NoiseSuppressor noiseSuppressor;
-    private AcousticEchoCanceler acousticEchoCanceler;
+
+    //Vad and silence
     private Vad mVad;
+    private boolean done = false;
+    //private boolean cancelled;
+    private int mMinimumVoice = 150;
+    private int mMaximumSilence = 500;
+    private int mUpperLimit = 10;
+    static final int FRAME_SIZE = 80;
 
     /**
      * Hotword recording constructor.
@@ -82,10 +90,16 @@ public class HotwordRecorder {
                 .setBufferSizeInBytes(BUFFER_SIZE)
                 .build();
 
+        mVad.start();
+        done= false;
         mRecorder.startRecording();
         mRecording = true;
+
         mThread = new Thread(readAudio);
         mThread.start();
+
+        /*mVadThread = new Thread(readVad);
+        mVadThread.start();*/
     }
 
     /**
@@ -95,6 +109,8 @@ public class HotwordRecorder {
         if (mRecorder != null && mRecorder.getState() == AudioRecord.STATE_INITIALIZED) {
             mRecording = false;
             mRecorder.stop();
+            mVad.stop();
+            done = true;
             Log.i("STREAM_PCM", String.valueOf(mPcmStream.size()));
 
             AsyncTaskRunner runner = new AsyncTaskRunner();
@@ -138,6 +154,169 @@ public class HotwordRecorder {
 
                 }
             };
+
+    private Runnable readVad =
+            new Runnable() {
+                public void run() {
+                    try {
+                        int vad = 0;
+                        boolean finishedvoice = false;
+                        boolean touchedvoice = false;
+                        boolean touchedsilence = false;
+                        boolean raisenovoice = false;
+                        long samplesvoice = 0;
+                        long samplessilence = 0;
+                        long dtantes = System.currentTimeMillis();
+                        long dtantesmili = System.currentTimeMillis();
+
+                        Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
+
+                        while (mRecording) {
+                            int nshorts = 0;
+
+                            short[] mBuftemp = new short[FRAME_SIZE * 1 * 2];
+                            nshorts = mRecorder.read(mBuftemp, 0, mBuftemp.length);
+
+                            vad = mVad.feed(mBuftemp, nshorts);
+
+                            long dtdepois = System.currentTimeMillis();
+
+                            if (vad == 0) {
+                                if (touchedvoice) {
+                                    samplessilence += dtdepois - dtantesmili;
+                                    if (samplessilence > mMaximumSilence) touchedsilence = true;
+                                }
+                            } else { // vad == 1 => Active voice
+                                samplesvoice += dtdepois - dtantesmili;
+                                if (samplesvoice > mMinimumVoice) touchedvoice = true;
+
+                                for (int i = 0; i < mBuftemp.length; ++i) {
+                                    mBuftemp[i] *= 5.0;
+                                }
+                            }
+                            dtantesmili = dtdepois;
+
+                            if (touchedvoice && touchedsilence)
+                                finishedvoice = true;
+
+                            if (finishedvoice) {
+                                done = true;
+                                Log.e("FINISHED_VOICE","FINISHED_VOICE");
+                            }
+
+                            if ((dtdepois - dtantes) / 1000 > mUpperLimit) {
+                                done = true;
+                                if (touchedvoice) {
+                                    Log.e("TOUCHED_VOICE","TOUCHED_VOICE");
+                                } else {
+                                    raisenovoice = true;
+                                }
+                            }
+
+                            if (nshorts <= 0)
+                                break;
+                        }
+
+            /*mVad.stop();
+            recorder.stop();
+            recorder.release();*/
+
+                        if (raisenovoice)
+                            Log.e("RAISED_NO_VOICE","RAISED_NO_VOICE");
+            /*if (cancelled) {
+                cancelled = false;
+                Log.e("CANCELED","CANCELED");
+                return;
+            }*/
+
+                    } catch (Exception exc) {
+                        String error = String.format("General audio error %s", exc.getMessage());
+                        Log.e("GENERAL_ERROR","GENERAL_ERROR");
+                        exc.printStackTrace();
+                    }
+
+                }
+            };
+
+    private void vadAndSilence() {
+
+        try {
+            int vad = 0;
+            boolean finishedvoice = false;
+            boolean touchedvoice = false;
+            boolean touchedsilence = false;
+            boolean raisenovoice = false;
+            long samplesvoice = 0;
+            long samplessilence = 0;
+            long dtantes = System.currentTimeMillis();
+            long dtantesmili = System.currentTimeMillis();
+
+            Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
+
+            while (!this.done) {
+                int nshorts = 0;
+
+                short[] mBuftemp = new short[FRAME_SIZE * 1 * 2];
+                nshorts = mRecorder.read(mBuftemp, 0, mBuftemp.length);
+
+                vad = mVad.feed(mBuftemp, nshorts);
+
+                long dtdepois = System.currentTimeMillis();
+
+                if (vad == 0) {
+                    if (touchedvoice) {
+                        samplessilence += dtdepois - dtantesmili;
+                        if (samplessilence > mMaximumSilence) touchedsilence = true;
+                    }
+                } else { // vad == 1 => Active voice
+                    samplesvoice += dtdepois - dtantesmili;
+                    if (samplesvoice > mMinimumVoice) touchedvoice = true;
+
+                    for (int i = 0; i < mBuftemp.length; ++i) {
+                        mBuftemp[i] *= 5.0;
+                    }
+                }
+                dtantesmili = dtdepois;
+
+                if (touchedvoice && touchedsilence)
+                    finishedvoice = true;
+
+                if (finishedvoice) {
+                    this.done = true;
+                    Log.e("FINISHED_VOICE","FINISHED_VOICE");
+                }
+
+                if ((dtdepois - dtantes) / 1000 > mUpperLimit) {
+                    this.done = true;
+                    if (touchedvoice) {
+                        Log.e("TOUCHED_VOICE","TOUCHED_VOICE");
+                    } else {
+                        raisenovoice = true;
+                    }
+                }
+
+                if (nshorts <= 0)
+                    break;
+            }
+
+            /*mVad.stop();
+            recorder.stop();
+            recorder.release();*/
+
+            if (raisenovoice)
+                Log.e("RAISED_NO_VOICE","RAISED_NO_VOICE");
+            /*if (cancelled) {
+                cancelled = false;
+                Log.e("CANCELED","CANCELED");
+                return;
+            }*/
+
+        } catch (Exception exc) {
+            String error = String.format("General audio error %s", exc.getMessage());
+            Log.e("GENERAL_ERROR","GENERAL_ERROR");
+            exc.printStackTrace();
+        }
+    }
 
     /**
      * Convert raw PCM data to a wav file.

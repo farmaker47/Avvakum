@@ -47,7 +47,7 @@ public class HotwordRecorder {
             .build();
 
     private ByteArrayOutputStream mPcmStream;
-    private AudioRecord mRecorder;
+    private AudioRecord mRecorder,mRecorderVad;
     private boolean mRecording;
     private Thread mThread,mVadThread;
     private String mHotwordKey;
@@ -90,16 +90,22 @@ public class HotwordRecorder {
                 .setBufferSizeInBytes(BUFFER_SIZE)
                 .build();
 
+        mRecorderVad = new AudioRecord.Builder().setAudioSource(AUDIO_SOURCE)
+                .setAudioFormat(AUDIO_FORMAT)
+                .setBufferSizeInBytes(BUFFER_SIZE)
+                .build();
+
         mVad.start();
         done= false;
         mRecorder.startRecording();
+        mRecorderVad.startRecording();
         mRecording = true;
 
-        mThread = new Thread(readAudio);
-        mThread.start();
+        /*mThread = new Thread(readAudio);
+        mThread.start();*/
 
-        /*mVadThread = new Thread(readVad);
-        mVadThread.start();*/
+        mVadThread = new Thread(readVad);
+        mVadThread.start();
     }
 
     /**
@@ -109,7 +115,9 @@ public class HotwordRecorder {
         if (mRecorder != null && mRecorder.getState() == AudioRecord.STATE_INITIALIZED) {
             mRecording = false;
             mRecorder.stop();
+
             mVad.stop();
+            mRecorderVad.stop();
             done = true;
             Log.i("STREAM_PCM", String.valueOf(mPcmStream.size()));
 
@@ -149,8 +157,8 @@ public class HotwordRecorder {
                         }
                     }
 
-                    mRecorder.release();
-                    mRecorder = null;
+                    /*mRecorder.release();
+                    mRecorder = null;*/
 
                 }
             };
@@ -175,7 +183,7 @@ public class HotwordRecorder {
                             int nshorts = 0;
 
                             short[] mBuftemp = new short[FRAME_SIZE * 1 * 2];
-                            nshorts = mRecorder.read(mBuftemp, 0, mBuftemp.length);
+                            nshorts = mRecorderVad.read(mBuftemp, 0, mBuftemp.length);
 
                             vad = mVad.feed(mBuftemp, nshorts);
 
@@ -217,6 +225,11 @@ public class HotwordRecorder {
                                 break;
                         }
 
+                        /*mRecorderVad.release();*/
+                        /*mRecorderVad = null;*/
+
+
+
             /*mVad.stop();
             recorder.stop();
             recorder.release();*/
@@ -238,7 +251,7 @@ public class HotwordRecorder {
                 }
             };
 
-    private void vadAndSilence() {
+    /*private void vadAndSilence() {
 
         try {
             int vad = 0;
@@ -299,24 +312,24 @@ public class HotwordRecorder {
                     break;
             }
 
-            /*mVad.stop();
+            *//*mVad.stop();
             recorder.stop();
-            recorder.release();*/
+            recorder.release();*//*
 
             if (raisenovoice)
                 Log.e("RAISED_NO_VOICE","RAISED_NO_VOICE");
-            /*if (cancelled) {
+            *//*if (cancelled) {
                 cancelled = false;
                 Log.e("CANCELED","CANCELED");
                 return;
-            }*/
+            }*//*
 
         } catch (Exception exc) {
             String error = String.format("General audio error %s", exc.getMessage());
             Log.e("GENERAL_ERROR","GENERAL_ERROR");
             exc.printStackTrace();
         }
-    }
+    }*/
 
     /**
      * Convert raw PCM data to a wav file.

@@ -326,13 +326,12 @@ public class DeepSpeechActivity extends AppCompatActivity implements HotwordReco
         if(listenerBoolDone){
             Log.e("DeepspeechActivity",String.valueOf(speechInt));
             hotwordRecorder.stopRecording();
+            //animation
+            //rippleBackground.stopRippleAnimation();
+            //centerImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none_white_56dp));
             //hotwordRecorder.startRecording();
             AsyncTaskRunner runner = new AsyncTaskRunner();
             runner.execute(inferenceString);
-
-            //animation
-            rippleBackground.stopRippleAnimation();
-            centerImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none_white_56dp));
         }
 
     }

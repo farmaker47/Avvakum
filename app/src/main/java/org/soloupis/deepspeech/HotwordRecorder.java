@@ -60,7 +60,7 @@ public class HotwordRecorder {
     private boolean done = false;
     //private boolean cancelled;
     private int mMinimumVoice = 150;
-    private int mMaximumSilence = 700;
+    private int mMaximumSilence = 2200;
     private int mUpperLimit = 100;
     static final int FRAME_SIZE = 80;
 

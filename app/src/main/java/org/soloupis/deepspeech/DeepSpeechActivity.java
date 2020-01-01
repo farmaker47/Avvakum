@@ -117,10 +117,10 @@ public class DeepSpeechActivity extends AppCompatActivity implements HotwordReco
                                               @Override
                                               public void run() {
                                                   //Called each time of some milliseconds(the period parameter)
-                                                  hotwordRecorder.stopRecording();
+                                                  /*hotwordRecorder.stopRecording();
                                                   hotwordRecorder.startRecording();
                                                   AsyncTaskRunner runner = new AsyncTaskRunner();
-                                                  runner.execute(inferenceString);
+                                                  runner.execute(inferenceString);*/
                                               }
                                           },
                             //Set how long before to start calling the TimerTask (in milliseconds)
@@ -316,14 +316,23 @@ public class DeepSpeechActivity extends AppCompatActivity implements HotwordReco
     public void onSpeechChange(int speechInt) {
 
         if (speechInt == 1234){
-            Log.e("DeepspeechActivity",String.valueOf(speechInt));
+
             listenerBoolDone = true;
         }else{
             listenerBoolDone = false;
+            Log.e("DeepspeechActivity",String.valueOf(speechInt));
         }
 
-        while(listenerBoolDone){
+        if(listenerBoolDone){
+            Log.e("DeepspeechActivity",String.valueOf(speechInt));
             hotwordRecorder.stopRecording();
+            //hotwordRecorder.startRecording();
+            AsyncTaskRunner runner = new AsyncTaskRunner();
+            runner.execute(inferenceString);
+
+            //animation
+            rippleBackground.stopRippleAnimation();
+            centerImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none_white_56dp));
         }
 
     }

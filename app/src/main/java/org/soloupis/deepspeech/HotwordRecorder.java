@@ -60,8 +60,8 @@ public class HotwordRecorder {
     private boolean done = false;
     //private boolean cancelled;
     private int mMinimumVoice = 150;
-    private int mMaximumSilence = 500;
-    private int mUpperLimit = 4;
+    private int mMaximumSilence = 700;
+    private int mUpperLimit = 100;
     static final int FRAME_SIZE = 80;
 
     //Listener
@@ -198,6 +198,7 @@ public class HotwordRecorder {
 
                             if (vad == 0) {
                                 Log.e("VAD","0");
+                                mHotwordListener.onSpeechChange(6789);
                                 if (touchedvoice) {
                                     samplessilence += dtdepois - dtantesmili;
                                     if (samplessilence > mMaximumSilence) touchedsilence = true;

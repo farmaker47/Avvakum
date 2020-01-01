@@ -69,6 +69,9 @@ public class DeepSpeechActivity extends AppCompatActivity implements HotwordReco
     //Vad
     private Vad mVad;
 
+    //listener
+    private boolean listenerBoolDone = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -311,7 +314,17 @@ public class DeepSpeechActivity extends AppCompatActivity implements HotwordReco
 
     @Override
     public void onSpeechChange(int speechInt) {
-        Log.e("DeepspeechActivity",String.valueOf(speechInt));
+
+        if (speechInt == 1234){
+            Log.e("DeepspeechActivity",String.valueOf(speechInt));
+            listenerBoolDone = true;
+        }else{
+            listenerBoolDone = false;
+        }
+
+        while(listenerBoolDone){
+            hotwordRecorder.stopRecording();
+        }
 
     }
 

@@ -207,9 +207,8 @@ public class HotwordRecorder {
                                 samplesvoice += dtdepois - dtantesmili;
                                 if (samplesvoice > mMinimumVoice) touchedvoice = true;
 
-                                /*for (int i = 0; i < mBuftemp.length; ++i) {
-                                    mBuftemp[i] *= 5.0;
-                                }*/
+                                mHotwordListener.onSpeechChange(6789);
+
                             }
                             dtantesmili = dtdepois;
 

@@ -186,7 +186,7 @@ public class HotwordRecorder {
 
                         Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
 
-                        while (mRecording) {
+                        while (mRecording && !done) {
                             int nshorts = 0;
 
                             short[] mBuftemp = new short[FRAME_SIZE * 1 * 2];
@@ -222,7 +222,7 @@ public class HotwordRecorder {
                                 mHotwordListener.onSpeechChange(1234);
                             }
 
-                            //if voice is over mUpperlimit = 10 seconds
+                            //if voice is over mUpperlimit = .. seconds
                             if ((dtdepois - dtantes) / 1000 > mUpperLimit) {
                                 Log.e("DTDEPOIS","UPPER_LIMIT");
                                 done = true;

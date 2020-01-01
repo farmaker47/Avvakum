@@ -60,7 +60,7 @@ public class HotwordRecorder {
     private boolean done = false;
     //private boolean cancelled;
     private int mMinimumVoice = 150;
-    private int mMaximumSilence = 2200;
+    private int mMaximumSilence = 1400;
     private int mUpperLimit = 100;
     static final int FRAME_SIZE = 80;
 
@@ -183,6 +183,7 @@ public class HotwordRecorder {
                         long samplessilence = 0;
                         long dtantes = System.currentTimeMillis();
                         long dtantesmili = System.currentTimeMillis();
+                        boolean done = false;
 
                         Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
 
@@ -220,6 +221,7 @@ public class HotwordRecorder {
                                 done = true;
                                 Log.e("FINISHED_VOICE","FINISHED_VOICE");
                                 mHotwordListener.onSpeechChange(1234);
+
                             }
 
                             //if voice is over mUpperlimit = .. seconds

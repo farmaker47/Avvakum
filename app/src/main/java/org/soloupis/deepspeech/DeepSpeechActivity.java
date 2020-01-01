@@ -316,20 +316,20 @@ public class DeepSpeechActivity extends AppCompatActivity implements HotwordReco
     public void onSpeechChange(int speechInt) {
 
         if (speechInt == 1234){
-
             listenerBoolDone = true;
         }else{
             listenerBoolDone = false;
-            Log.e("DeepspeechActivity",String.valueOf(speechInt));
+            //Log.e("DeepspeechActivity",String.valueOf(speechInt));
         }
 
         if(listenerBoolDone){
-            Log.e("DeepspeechActivity",String.valueOf(speechInt));
+            //Log.e("DeepspeechActivity",String.valueOf(speechInt));
             hotwordRecorder.stopRecording();
             //animation
             //rippleBackground.stopRippleAnimation();
             //centerImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none_white_56dp));
-            //hotwordRecorder.startRecording();
+            hotwordRecorder.startRecording();
+
             AsyncTaskRunner runner = new AsyncTaskRunner();
             runner.execute(inferenceString);
         }

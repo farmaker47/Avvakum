@@ -64,13 +64,16 @@ public class HotwordRecorder {
     private int mUpperLimit = 4;
     static final int FRAME_SIZE = 80;
 
+    //Listener
+    private HotwordSpeechListener mHotwordListener;
+
     /**
      * Hotword recording constructor.
      *
      * @param key              Hotword key
      * @param numberRecordings Number of recordings to be taken
      */
-    public HotwordRecorder(String key, int numberRecordings, Context context, Vad vad) {
+    public HotwordRecorder(String key, int numberRecordings, Context context, Vad vad, HotwordSpeechListener listener) {
         mHotwordKey = key;
         mPcmStream = new ByteArrayOutputStream();
         mRecording = false;
@@ -78,6 +81,11 @@ public class HotwordRecorder {
         mSamplesTaken = 0;
         mContext = context;
         mVad = vad;
+        mHotwordListener = listener;
+    }
+
+    public interface HotwordSpeechListener {
+        void onSpeechChange(int speechInt);
     }
 
     /**
@@ -101,8 +109,8 @@ public class HotwordRecorder {
         mRecorderVad.startRecording();
         mRecording = true;
 
-        /*mThread = new Thread(readAudio);
-        mThread.start();*/
+        mThread = new Thread(readAudio);
+        mThread.start();
 
         mVadThread = new Thread(readVad);
         mVadThread.start();
@@ -211,6 +219,7 @@ public class HotwordRecorder {
                             if (finishedvoice) {
                                 done = true;
                                 Log.e("FINISHED_VOICE","FINISHED_VOICE");
+                                mHotwordListener.onSpeechChange(1234);
                             }
 
                             //if voice is over mUpperlimit = 10 seconds

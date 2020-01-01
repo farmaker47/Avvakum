@@ -37,7 +37,7 @@ import java.util.TimerTask;
 
 import org.soloupis.deepspeech.libdeepspeech.DeepSpeechModel;
 
-public class DeepSpeechActivity extends AppCompatActivity {
+public class DeepSpeechActivity extends AppCompatActivity implements HotwordRecorder.HotwordSpeechListener {
 
     DeepSpeechModel _m = null;
 
@@ -87,7 +87,7 @@ public class DeepSpeechActivity extends AppCompatActivity {
         _tfliteStatus.setText("Ready! Press mic button...");
         mVad = new Vad();
         int arxiVad = mVad.start();
-        hotwordRecorder = new HotwordRecorder("hotKey", 0, DeepSpeechActivity.this, mVad);
+        hotwordRecorder = new HotwordRecorder("hotKey", 0, DeepSpeechActivity.this, mVad,this);
 
         inferenceString = "/sdcard/deepspeech4/soloupis.wav";
         newModel("/sdcard/deepspeech4/output_graph.tflite");
@@ -307,6 +307,12 @@ public class DeepSpeechActivity extends AppCompatActivity {
             }
 
         }
+    }
+
+    @Override
+    public void onSpeechChange(int speechInt) {
+        Log.e("DeepspeechActivity",String.valueOf(speechInt));
+
     }
 
     //AsyncTask for WriteWav

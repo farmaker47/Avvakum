@@ -144,7 +144,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="48dp"
             android:textSize="24sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -158,15 +157,14 @@
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="160dp">
+            android:layout_height="240dp">
 
             <TextView
                 android:id="@+id/decodedString"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal|center_vertical"
-                android:layout_margin="36dp"
-                android:padding="4dp"
+                android:textAlignment="viewStart"
+                android:padding="16dp"
                 android:textSize="24sp"
                 android:textStyle="italic|bold" />
         </ScrollView>

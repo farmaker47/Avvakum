@@ -1,1 +1,1 @@
-Speech Implementation of Mozilla DeepSpeech
+SpeechToText Recognition with the help of Mozilla DeepSpeech Implementation.

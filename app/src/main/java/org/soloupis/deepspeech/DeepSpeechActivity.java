@@ -75,6 +75,13 @@ public class DeepSpeechActivity extends AppCompatActivity implements WordRecorde
     //listener
     private boolean listenerBoolDone = false;
 
+    //Permissions
+    int PERMISSION_ALL = 123;
+    String[] PERMISSIONS = {
+            Manifest.permission.RECORD_AUDIO,
+            android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -166,55 +173,26 @@ public class DeepSpeechActivity extends AppCompatActivity implements WordRecorde
         initialize();
     }
 
+    public static boolean hasPermissions(Context context, String... permissions) {
+        if (context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     private void initialize() {
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO},
-                    123);
+        if (!hasPermissions(this, PERMISSIONS)) {
+            ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
         }
 
     }
 
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-
-        switch (requestCode) {
-            case 123: {
-                //premission to read storage
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                            != PackageManager.PERMISSION_GRANTED) {
-
-                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                987);
-                    }
-
-                } else {
-
-                    // permission denied. Disable the
-                    // functionality that depends on this permission.
-                    Toast.makeText(DeepSpeechActivity.this, getResources().getString(R.string.audioPermissionRequired), Toast.LENGTH_LONG).show();
-                    finish();
-                }
-                return;
-            }
-            case 987:{
-
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                } else {
-
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                    Toast.makeText(DeepSpeechActivity.this, getResources().getString(R.string.writeExternalStoragePermissionRequired), Toast.LENGTH_LONG).show();
-                    finish();
-                }
-                return;
-
-            }
-        }
-    }
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {}
 
     private char readLEChar(RandomAccessFile f) throws IOException {
         byte b1 = f.readByte();

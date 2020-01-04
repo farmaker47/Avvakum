@@ -27,7 +27,7 @@ import java.util.Arrays;
  * Hotword recorder.
  * <p>
  * Expected flow:
- * 1. Create HotwordRecorder()
+ * 1. Create WordRecorder()
  * 2. Call startRecording()
  * 3. Call stopRecording()
  * 4. Call validateSample()
@@ -35,7 +35,7 @@ import java.util.Arrays;
  * 6. Repeat 2-5 until desired number of samples is reached.
  * 7. Call writeConfig()
  */
-public class HotwordRecorder {
+public class WordRecorder {
     private int AUDIO_SOURCE = MediaRecorder.AudioSource.VOICE_RECOGNITION;
     private int CHANNEL_MASK = AudioFormat.CHANNEL_IN_MONO;
     private int SAMPLE_RATE = 16000;
@@ -73,7 +73,7 @@ public class HotwordRecorder {
      * @param key              Hotword key
      * @param numberRecordings Number of recordings to be taken
      */
-    public HotwordRecorder(String key, int numberRecordings, Context context, Vad vad, HotwordSpeechListener listener) {
+    public WordRecorder(String key, int numberRecordings, Context context, Vad vad, HotwordSpeechListener listener) {
         mHotwordKey = key;
         mPcmStream = new ByteArrayOutputStream();
         mRecording = false;

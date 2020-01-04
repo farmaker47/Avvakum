@@ -24,7 +24,6 @@ import android.widget.Toast;
 
 import com.skyfishjy.library.RippleBackground;
 
-import java.io.ByteArrayOutputStream;
 import java.io.RandomAccessFile;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -37,7 +36,7 @@ import java.util.TimerTask;
 
 import org.soloupis.deepspeech.libdeepspeech.DeepSpeechModel;
 
-public class DeepSpeechActivity extends AppCompatActivity implements HotwordRecorder.HotwordSpeechListener {
+public class DeepSpeechActivity extends AppCompatActivity implements WordRecorder.HotwordSpeechListener {
 
     DeepSpeechModel _m = null;
 
@@ -48,7 +47,7 @@ public class DeepSpeechActivity extends AppCompatActivity implements HotwordReco
     TextView _tfliteStatus;
 
     private Button _startInference, startRecording, stopRecording;
-    private HotwordRecorder hotwordRecorder;
+    private WordRecorder hotwordRecorder;
     private RippleBackground rippleBackground;
     private ImageButton centerImage, centerImageGoogle;
 
@@ -90,7 +89,7 @@ public class DeepSpeechActivity extends AppCompatActivity implements HotwordReco
         _tfliteStatus.setText("Ready! Press mic button...");
         mVad = new Vad();
         int arxiVad = mVad.start();
-        hotwordRecorder = new HotwordRecorder("hotKey", 0, DeepSpeechActivity.this, mVad,this);
+        hotwordRecorder = new WordRecorder("hotKey", 0, DeepSpeechActivity.this, mVad,this);
 
         inferenceString = "/sdcard/deepspeech4/soloupis.wav";
         newModel("/sdcard/deepspeech4/output_graph.tflite");

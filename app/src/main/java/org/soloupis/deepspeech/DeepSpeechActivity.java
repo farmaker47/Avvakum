@@ -178,6 +178,7 @@ public class DeepSpeechActivity extends AppCompatActivity implements WordRecorde
             for (String permission : permissions) {
                 if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
                     return false;
+
                 }
             }
         }

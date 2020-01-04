@@ -5,4 +5,6 @@
     <string name="stop_recording">STOP RECORDING</string>
     <string name="speech_prompt">Say something&#8230;</string>
     <string name="speech_not_supported">Sorry! Your device doesn\'t support speech input</string>
+    <string name="audioPermissionRequired">Audio permission is required</string>
+    <string name="writeExternalStoragePermissionRequired">Write external storage is required</string>
 </resources>

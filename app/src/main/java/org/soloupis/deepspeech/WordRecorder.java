@@ -60,7 +60,7 @@ public class WordRecorder {
     private boolean done = false;
     //private boolean cancelled;
     private int mMinimumVoice = 70;
-    private int mMaximumSilence = 1400;
+    private int mMaximumSilence = 1700;
     private int mUpperLimit = 100;
     static final int FRAME_SIZE = 80;
 
@@ -103,7 +103,7 @@ public class WordRecorder {
                 .setBufferSizeInBytes(BUFFER_SIZE)
                 .build();
 
-        mVad.start();
+        //mVad.start();
         done= false;
         mRecorder.startRecording();
         mRecorderVad.startRecording();
@@ -124,7 +124,7 @@ public class WordRecorder {
             mRecording = false;
             mRecorder.stop();
 
-            mVad.stop();
+            //mVad.stop();
             mRecorderVad.stop();
             done = true;
             Log.i("STREAM_PCM", String.valueOf(mPcmStream.size()));

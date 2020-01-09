@@ -59,8 +59,8 @@ public class WordRecorder {
     private Vad mVad;
     private boolean done = false;
     //private boolean cancelled;
-    private int mMinimumVoice = 150;
-    private int mMaximumSilence = 2400;
+    private int mMinimumVoice = 70;
+    private int mMaximumSilence = 1400;
     private int mUpperLimit = 100;
     static final int FRAME_SIZE = 80;
 

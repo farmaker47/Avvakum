@@ -450,7 +450,7 @@ public class WordRecorder {
         }
     }
 
-    //AsyncTask for WriteWav
+    //AsyncTask for Inference
     private class AsyncTaskRunner extends AsyncTask<ByteArrayOutputStream, String, String> {
 
         @Override

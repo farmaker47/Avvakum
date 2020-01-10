@@ -14,6 +14,7 @@ import android.media.SoundPool;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import android.os.Environment;
 import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.View;
@@ -28,6 +29,8 @@ import android.widget.Toast;
 
 import com.skyfishjy.library.RippleBackground;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.RandomAccessFile;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -144,6 +147,8 @@ public class DeepSpeechActivity extends AppCompatActivity implements WordRecorde
                     hotwordRecorder.stopRecording();
                     AsyncTaskRunner runner = new AsyncTaskRunner();
                     runner.execute(inferenceString);
+
+                    generateTxtOnSD("WholeTranscription",wholeSentence);
 
                     //Finally stop timer
                     t.cancel();
@@ -380,6 +385,23 @@ public class DeepSpeechActivity extends AppCompatActivity implements WordRecorde
             doInference(strings[0]);
 
             return null;
+        }
+    }
+
+    //Write .txt file
+    private void generateTxtOnSD(String sFileName, String sBody) {
+        try {
+            File root = new File(Environment.getExternalStorageDirectory(), "deepspeech4");
+            if (!root.exists()) {
+                root.mkdirs();
+            }
+            File gpxfile = new File(root, sFileName);
+            FileWriter writer = new FileWriter(gpxfile);
+            writer.append(sBody);
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

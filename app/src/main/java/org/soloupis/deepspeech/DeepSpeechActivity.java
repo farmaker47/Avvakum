@@ -58,11 +58,10 @@ public class DeepSpeechActivity extends AppCompatActivity implements WordRecorde
     private RippleBackground rippleBackground;
     private ImageButton centerImage, centerImageGoogle;
 
-    private Timer t;
     private String wholeSentence, inferenceString;
     private AudioManager am;
 
-    final int BEAM_WIDTH = 50;/*
+    final int BEAM_WIDTH = 100;/*
     final float LM_ALPHA = 0.75f;
     final float LM_BETA = 1.85f;*/
 
@@ -103,7 +102,7 @@ public class DeepSpeechActivity extends AppCompatActivity implements WordRecorde
         _tfliteStatus.setText("Ready! Press mic button...");
         mVad = new Vad();
         int arxiVad = mVad.start();
-        hotwordRecorder = new WordRecorder("hotKey", 0, DeepSpeechActivity.this, mVad,this);
+        hotwordRecorder = new WordRecorder("hotKey", 0, DeepSpeechActivity.this, mVad, this);
 
         inferenceString = "/sdcard/deepspeech4/soloupis.wav";
         newModel("/sdcard/deepspeech4/output_graph.tflite");
@@ -123,23 +122,23 @@ public class DeepSpeechActivity extends AppCompatActivity implements WordRecorde
                     wholeSentence = "";
                     hotwordRecorder.startRecording();
 
-                    //Declare the timer
+                    /*//Declare the timer
                     t = new Timer();
                     //Set the schedule function and rate
                     t.scheduleAtFixedRate(new TimerTask() {
                                               @Override
                                               public void run() {
                                                   //Called each time of some milliseconds(the period parameter)
-                                                  /*hotwordRecorder.stopRecording();
+                                                  *//*hotwordRecorder.stopRecording();
                                                   hotwordRecorder.startRecording();
                                                   AsyncTaskRunner runner = new AsyncTaskRunner();
-                                                  runner.execute(inferenceString);*/
+                                                  runner.execute(inferenceString);*//*
                                               }
                                           },
                             //Set how long before to start calling the TimerTask (in milliseconds)
                             4000,
                             //Set the amount of time between each execution (in milliseconds)
-                            4000);
+                            4000);*/
 
                 } else {
                     rippleBackground.stopRippleAnimation();
@@ -148,10 +147,10 @@ public class DeepSpeechActivity extends AppCompatActivity implements WordRecorde
                     AsyncTaskRunner runner = new AsyncTaskRunner();
                     runner.execute(inferenceString);
 
-                    generateTxtOnSD("WholeTranscription",wholeSentence);
+                    generateTxtOnSD("WholeTranscription.txt", wholeSentence);
 
-                    //Finally stop timer
-                    t.cancel();
+                    /*//Finally stop timer
+                    t.cancel();*/
 
                 }
             }
@@ -198,7 +197,8 @@ public class DeepSpeechActivity extends AppCompatActivity implements WordRecorde
 
     }
 
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {}
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    }
 
     private char readLEChar(RandomAccessFile f) throws IOException {
         byte b1 = f.readByte();
@@ -355,14 +355,14 @@ public class DeepSpeechActivity extends AppCompatActivity implements WordRecorde
     @Override
     public void onSpeechChange(int speechInt) {
 
-        if (speechInt == 1234){
+        if (speechInt == 1234) {
             listenerBoolDone = true;
-        }else{
+        } else {
             listenerBoolDone = false;
             //Log.e("DeepspeechActivity",String.valueOf(speechInt));
         }
 
-        if(listenerBoolDone){
+        if (listenerBoolDone) {
             //Log.e("DeepspeechActivity",String.valueOf(speechInt));
             hotwordRecorder.stopRecording();
             //animation

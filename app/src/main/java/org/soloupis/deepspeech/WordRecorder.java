@@ -47,9 +47,9 @@ public class WordRecorder {
             .build();
 
     private ByteArrayOutputStream mPcmStream;
-    private AudioRecord mRecorder,mRecorderVad;
+    private AudioRecord mRecorder, mRecorderVad;
     private boolean mRecording;
-    private Thread mThread,mVadThread;
+    private Thread mThread, mVadThread;
     private String mHotwordKey;
     private double[] mSampleLengths;
     private int mSamplesTaken;
@@ -60,7 +60,7 @@ public class WordRecorder {
     private boolean done = false;
     //private boolean cancelled;
     private int mMinimumVoice = 70;
-    private int mMaximumSilence = 1700;
+    private int mMaximumSilence = 700;
     private int mUpperLimit = 100;
     static final int FRAME_SIZE = 80;
 
@@ -104,7 +104,7 @@ public class WordRecorder {
                 .build();
 
         //mVad.start();
-        done= false;
+        done = false;
         mRecorder.startRecording();
         mRecorderVad.startRecording();
         mRecording = true;
@@ -153,7 +153,7 @@ public class WordRecorder {
                         //https://stackoverflow.com/questions/25441166/how-to-adjust-microphone-sensitivity-while-recording-audio-in-android
                         if (readBytes > 0) {
                             for (int i = 0; i < readBytes; ++i) {
-                                buffer[i] = (short) Math.min((int) (buffer[i] * 6.0), (int) Short.MAX_VALUE);
+                                buffer[i] = (short) Math.min((int) (buffer[i] * 6.7), (int) Short.MAX_VALUE);
                             }
                         }
 
@@ -198,14 +198,14 @@ public class WordRecorder {
                             long dtdepois = System.currentTimeMillis();
 
                             if (vad == 0) {
-                                Log.e("VAD","0");
+                                Log.e("VAD", "0");
                                 mHotwordListener.onSpeechChange(6789);
                                 if (touchedvoice) {
                                     samplessilence += dtdepois - dtantesmili;
                                     if (samplessilence > mMaximumSilence) touchedsilence = true;
                                 }
                             } else { // vad == 1 => Active voice
-                                Log.e("VAD","1");
+                                Log.e("VAD", "1");
                                 samplesvoice += dtdepois - dtantesmili;
                                 if (samplesvoice > mMinimumVoice) touchedvoice = true;
 
@@ -219,19 +219,19 @@ public class WordRecorder {
 
                             if (finishedvoice) {
                                 done = true;
-                                Log.e("FINISHED_VOICE","FINISHED_VOICE");
+                                Log.e("FINISHED_VOICE", "FINISHED_VOICE");
                                 mHotwordListener.onSpeechChange(1234);
 
                             }
 
                             //if voice is over mUpperlimit = .. seconds
                             if ((dtdepois - dtantes) / 1000 > mUpperLimit) {
-                                Log.e("DTDEPOIS","UPPER_LIMIT");
+                                Log.e("DTDEPOIS", "UPPER_LIMIT");
                                 done = true;
                                 if (touchedvoice) {
-                                    Log.e("TOUCHED_VOICE","TOUCHED_VOICE");
+                                    Log.e("TOUCHED_VOICE", "TOUCHED_VOICE");
                                 } else {
-                                    Log.e("RAISED_NO_VOICE","RAISED_NO_VOICE");
+                                    Log.e("RAISED_NO_VOICE", "RAISED_NO_VOICE");
                                 }
                             }
 
@@ -250,7 +250,7 @@ public class WordRecorder {
 
                     } catch (Exception exc) {
                         String error = String.format("General audio error %s", exc.getMessage());
-                        Log.e("GENERAL_ERROR","GENERAL_ERROR");
+                        Log.e("GENERAL_ERROR", "GENERAL_ERROR");
                         exc.printStackTrace();
                     }
 
@@ -456,7 +456,7 @@ public class WordRecorder {
         @Override
         protected String doInBackground(ByteArrayOutputStream... byteArrayOutputStreams) {
 
-            Log.i("ASYNC_BACK",String.valueOf(byteArrayOutputStreams[0].size()));
+            Log.i("ASYNC_BACK", String.valueOf(byteArrayOutputStreams[0].size()));
 
             writeWav(byteArrayOutputStreams[0]);
 

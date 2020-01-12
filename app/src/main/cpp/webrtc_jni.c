@@ -4,7 +4,7 @@
 #include "webrtc/common_audio/include/typedefs.h"
 #include <jni.h>
 
-#define AGGRESSIVENESS 3
+#define AGGRESSIVENESS 2
 VadInst* internalHandle;
 int resultVad;
 

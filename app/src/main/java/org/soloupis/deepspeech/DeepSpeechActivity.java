@@ -61,7 +61,7 @@ public class DeepSpeechActivity extends AppCompatActivity implements WordRecorde
     private String wholeSentence, inferenceString;
     private AudioManager am;
 
-    final int BEAM_WIDTH = 100;/*
+    final int BEAM_WIDTH = 40;/*
     final float LM_ALPHA = 0.75f;
     final float LM_BETA = 1.85f;*/
 
